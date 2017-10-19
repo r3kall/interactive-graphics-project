@@ -1,0 +1,3 @@
+
+superficie --> parte interna --> circuito
+		   --> parte esterna --> sfondo città/alberi
