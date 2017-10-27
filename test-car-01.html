@@ -40,6 +40,7 @@
 
 		// global variables
 		var Car;
+		var Road;
 
 		init();
 		animate();		
@@ -127,6 +128,29 @@
 				Car = obj;
 			 	scene.add( Car );
 				
+			} );
+
+			//TRACK TEXTURE
+			var trackText = new THREE.Texture();
+			var trackMan = new THREE.LoadingManager();
+			var trackIL = new THREE.ImageLoader(trackMan);
+			trackIL.load("images/track_map.png", function (image) {
+				trackText.image = image;
+				trackText.needsUpdate = true;
+			});
+			var trackMat = new THREE.MeshBasicMaterial({ map: trackText});
+
+			//TRACK MODEL
+			var track = new THREE.JSONLoader();
+			track.load("models/FullRaceTrack.json", function ( obj) {
+				var trackMesh = new THREE.Mesh( obj, trackMat );
+
+				trackMesh.position.y = -16.8;
+				trackMesh.scale.set(100,100,100);
+				//obj.position.x = 0;
+				Road = obj;
+			 	scene.add( trackMesh );
+			
 			} );
 
 			// END INIT FUNCTION

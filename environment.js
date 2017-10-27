@@ -23,7 +23,8 @@ function createSky(scene) {
 
 function createGround() {}
 
-function createRoad() {}
+function createRoad() {
+}
 
 function createGuardRails() {}
 
