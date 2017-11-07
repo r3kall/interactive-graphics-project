@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset=utf-8>
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<title>test-car-01</title>
+		<style>
+			body { margin: 0; }
+			canvas { width: 100%; height: 100% }
+		</style>
+	</head>
+	<body>
+		<script src="js/three.js"></script>
+		<script src="js/stats.js"></script>
+		<script src="js/Detector.js"></script>
+		<script src="js/OrbitControls.js"></script>
+
+		<script src="js/threex.keyboardstate.js"></script>
+
+		<script src="environment.js"></script>
+
+		<!-- ------------------------------------------------------------ -->
+
+		<div id="ThreeJS" style="position: absolute; left: 0px; top: 0px"></div>
+		<script>
+		/*
+			Three.js "test-car-01.html"
+			Author: Lorenzo Rutigliano
+			Date: September 2017 (three.js v87)
+		*/
+
+		// MAIN
+
+		// standard global variables
+		var container, scene, camera, renderer, controls, stats;
+		var keyboard = new THREEx.KeyboardState();
+		var clock = THREE.Clock();
+
+		// global variables
+		var Car;
+
+		init();
+		animate();		
+
+		// FUNCTIONS
+		function init() {
+
+			// SCENE
+			scene = new THREE.Scene();
+
+			// CAMERA
+			var SCREEN_WIDTH = window.innerWidth, SCREEN_HEIGHT = window.innerHeight;
+			var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 0.1, FAR = 20000;
+			camera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR);
+			scene.add(camera);
+			camera.position.set(5,5,10);
+			camera.lookAt(scene.position);
+
+			// RENDERER
+			if ( Detector.webgl )
+				renderer = new THREE.WebGLRenderer( {antialias:true} );
+			else
+				renderer = new THREE.CanvasRenderer(); 
+			renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+			container = document.getElementById( 'ThreeJS' );
+			container.appendChild( renderer.domElement );
+
+			// CONTROLS
+			// controls = new THREE.OrbitControls( camera, renderer.domElement );
+
+			// STATS
+			stats = new Stats();
+			stats.domElement.style.position = 'absolute';
+			stats.domElement.style.bottom = '0px';
+			stats.domElement.style.zIndex = 100;
+			container.appendChild( stats.domElement );
+
+			// LIGHT
+			var light = new THREE.PointLight(0xffffff);
+			light.position.set(0, 250, 0);
+			scene.add(light);
+
+			// FLOOR
+			var floorTexture = new THREE.TextureLoader().load( 'images/asf1.png' );
+
+			floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping;
+
+			floorTexture.repeat.set( 128, 128 );
+
+			var floorMaterial = new THREE.MeshPhongMaterial( { map: floorTexture, side: THREE.DoubleSide } );
+			var floorGeometry = new THREE.PlaneGeometry(1000, 1000, 10, 10);
+			var floor = new THREE.Mesh(floorGeometry, floorMaterial);
+			floor.position.y = -0.5;
+			floor.rotation.x = Math.PI / 2;
+			scene.add(floor);
+
+			// SKYBOX / FOG
+			createSky(scene);
+
+			// CAR TEXTURE
+			var texture = new THREE.Texture();
+			var manager = new THREE.LoadingManager();
+			var imageLoader = new THREE.ImageLoader(manager);
+			imageLoader.load("images/camero_map.png", function (image) {
+			texture.image = image;
+			texture.needsUpdate = true;
+			});
+			var material = new THREE.MeshBasicMaterial({ map: texture});
+
+			// CAR MODEL
+			var objectLoader = new THREE.ObjectLoader();
+			objectLoader.load("models/camero-2010-low-poly.json", function ( obj ) {
+
+				obj.traverse( function ( child ) {
+					if ( child instanceof THREE.Mesh ) {
+						child.material = material;
+					}
+
+				} );
+
+				obj.position.y = -0.5;
+				obj.position.x = 0;
+				Car = obj;
+			 	scene.add( Car );
+				
+			} );
+
+			//TRACK TEXTURE NOT IMPLEMENTED YET
+			var trackText = new THREE.Texture();
+			var trackMan = new THREE.LoadingManager();
+			var trackIL = new THREE.ImageLoader(trackMan);
+			trackIL.load("images/track_map.png", function (image) {  //TEXTURE DI UN ALTRO TRACCIATO
+				trackText.image = image;
+				trackText.needsUpdate = true;
+			});
+			var trackMat = new THREE.MeshLambertMaterial({ map: trackText});
+
+			//TRACK MODEL
+			var track = new THREE.JSONLoader();
+			track.load("models/trackTut18.json", function ( obj) {
+				var trackMesh = new THREE.Mesh( obj, trackMat );
+
+				trackMesh.position.y = -0.6;
+				//trackMesh.scale.set(100,100,100);
+			 	scene.add( trackMesh );
+			
+			} );
+
+			// END INIT FUNCTION
+		}		
+
+
+		function animate() {
+
+			requestAnimationFrame( animate );
+				render();
+				update();
+
+			// END ANIMATE FUNCTION
+		}
+
+
+		function update() {
+
+			// var delta = clock.getDelta();
+			var delta = 0.0025
+			var moveDistance = 200 * delta;  // 200 pixels per second
+			var rotateAngle = Math.PI / 2 * 0.02;
+
+			// local transformations
+
+			// move forwards/backwards/left/right
+			if ( keyboard.pressed("W") )
+				Car.translateZ( -moveDistance );
+			if ( keyboard.pressed("S") )
+				Car.translateZ(  moveDistance );
+			if ( keyboard.pressed("Q") )
+				Car.translateX( -moveDistance );
+			if ( keyboard.pressed("E") )
+				Car.translateX(  moveDistance );
+
+			// rotate left/right/up/down
+			var rotation_matrix = new THREE.Matrix4().identity();
+			if ( keyboard.pressed("A") )
+				Car.rotateOnAxis( new THREE.Vector3(0,1,0), rotateAngle);
+			if ( keyboard.pressed("D") )
+				Car.rotateOnAxis( new THREE.Vector3(0,1,0), -rotateAngle);
+			if ( keyboard.pressed("R") )
+				Car.rotateOnAxis( new THREE.Vector3(1,0,0), rotateAngle);
+			if ( keyboard.pressed("F") )
+				Car.rotateOnAxis( new THREE.Vector3(1,0,0), -rotateAngle);
+			
+			if ( keyboard.pressed("Z") )
+			{
+				Car.position.set(0,-0.5,0);
+				Car.rotation.set(0,0,0);
+			}
+			
+			var relativeCameraOffset = new THREE.Vector3(0,3,10);
+			var cameraOffset = relativeCameraOffset.applyMatrix4( Car.matrixWorld );
+			camera.position.x = cameraOffset.x;
+			camera.position.y = cameraOffset.y;
+			camera.position.z = cameraOffset.z;
+			camera.lookAt( Car.position );
+
+
+			// controls.update();
+			stats.update();
+
+			// END UPDATE FUNCTION
+		}
+
+
+		function render() {
+
+			renderer.render( scene, camera );
+
+			// END RENDER FUNCTION
+		}
+
+		</script>
+	</body>
+</html>
