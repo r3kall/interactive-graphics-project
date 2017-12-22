@@ -1,0 +1,239 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset=utf-8>
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<title>Interactive Graphics Project - Racing Game</title>
+		<link href="common.css" rel="stylesheet" type="text/css" />
+	</head>
+	<body>
+
+		<div id="container">
+			<div id="hud">
+	      		<span id="speed" class="hud"><span id="speed_value" class="value">0</span> kmh</span>
+	      	</div>
+	    </div>
+
+		<script src="js/three.js"></script>
+		<script src="js/stats.js"></script>
+		<script src="js/Detector.js"></script>
+		<script src="js/threex.keyboardstate.js"></script>
+
+		<script src="common.js"></script>
+
+		<!-- ------------------------------------------------------------ -->
+
+		<script>
+		/*
+			Three.js "test-car-01.html"
+			Author: Lorenzo Rutigliano, Mattia Rubeca.
+			Date: September 2017 (three.js v87).
+		*/
+
+		// MAIN
+
+		// standard global variables
+		var container, scene, camera, renderer, stats;
+		var keyboard = new THREEx.KeyboardState();
+		var clock = THREE.Clock();
+
+		// global variables
+        var Car, Track;
+        var collidableMeshList = [];
+        var onDirectionReferences = [];
+
+        // car variables
+        var speed 		 = 0; 			   // current speed
+        var maxSpeed 	 = 300; 		   // top speed
+        var accel 	 	 = maxSpeed/10;    // acceleration rate
+        var breaking 	 = -maxSpeed/6;   // deceleration when breaking
+        var decel 	 	 = -maxSpeed/100;  // deceleration rate
+        var offRoadDecel = -maxSpeed/9;   // off road deceleration
+    	var offRoadLimit =  maxSpeed/4;    // off road top speed (deceleration no longer applies)
+
+    	var hud = {
+	      speed: { value: null, dom: document.getElementById('speed_value')}
+	    }
+
+	    var canvas;
+
+		init();
+		animate();		
+
+		// FUNCTIONS
+		function init() {
+
+			// SCENE
+			scene = new THREE.Scene();
+
+			// CAMERA
+			var SCREEN_WIDTH = window.innerWidth, SCREEN_HEIGHT = window.innerHeight;
+			var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 0.1, FAR = 20000;
+			camera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR);
+			scene.add(camera);
+			camera.position.set(0, 3, -8);
+            camera.lookAt(new THREE.Vector3(0, 0, 0));
+
+			// RENDERER
+			if ( Detector.webgl )
+				renderer = new THREE.WebGLRenderer( {antialias:true} );
+			else
+				renderer = new THREE.CanvasRenderer(); 
+			renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+			container = document.getElementById('container');
+			container.appendChild( renderer.domElement );
+
+			// STATS
+			stats = new Stats();
+			stats.domElement.style.position = 'absolute';
+			stats.domElement.style.bottom = '0px';
+			stats.domElement.style.zIndex = 100;
+			container.appendChild( stats.domElement );
+
+			// LIGHT
+			var light = new THREE.PointLight(0xffffff);
+			light.position.set(0, 250, 0);
+			scene.add(light);
+
+			var axes = new THREE.AxisHelper(100);
+			scene.add( axes );
+
+			// ENVIRONMENT
+			Environment.createFloor(scene);  // create floor
+			Environment.createSky(scene);    // create skybox
+
+			Track = Environment.createTrack(scene);  // create and get the Race Track
+
+			var wallsGroup = Environment.createWalls(scene).children;  // create and get an array of walls
+			for (var i=0; i < wallsGroup.length; i++)
+				collidableMeshList.push(wallsGroup[i]);  // add walls to collidable objects
+
+			var insideWallsGroup = Environment.createIWalls(scene).children;
+			for (var i=0; i < insideWallsGroup.length; i++) {
+				collidableMeshList.push(insideWallsGroup[i]);
+				onDirectionReferences.push(insideWallsGroup[i]);
+			}
+
+			Environment.createCity(scene);
+
+            // CAR TEXTURE
+            var texture = new THREE.Texture();
+            var manager = new THREE.LoadingManager();
+            var imageLoader = new THREE.ImageLoader(manager);
+            imageLoader.load("images/camero_map.png", function (image) {
+                texture.image = image;
+                texture.needsUpdate = true;
+            });
+            var material = new THREE.MeshBasicMaterial({ map: texture });
+
+            // CAR MODEL
+            var objectLoader = new THREE.JSONLoader();
+            objectLoader.load("models/camero-2010-low-poly.json", function (obj) {
+
+                var carMesh = new THREE.Mesh(obj, material);
+                carMesh.position.set(-30, -0.5, 20);
+                carMesh.rotation.set(0, Math.PI, 0);
+                carMesh.rotateOnAxis(new THREE.Vector3(0,1,0), Math.PI);
+
+                Car = carMesh;
+                scene.add(Car);
+                Car.add(camera);
+            });
+
+			// END INIT
+		}		
+
+
+		function animate() {
+
+			requestAnimationFrame(animate);	
+			render();
+			update();		
+
+			// END ANIMATE FUNCTION
+		}
+
+
+		function update() {
+			updateCarPosition();
+			stats.update();
+		}
+
+
+		function updateCarPosition() {
+
+			var dt = 0.5;
+			var speedPercent = speed / maxSpeed;
+			var ds = 2 * speedPercent * dt;
+			var rotateAngle = Math.PI / 2 * 0.025;
+			var originPoint = Car.position.clone();
+
+			// update speed	
+			if ( keyboard.pressed("W") ) 
+				speed = Util.accelerate(speed, accel, dt);
+			else if ( keyboard.pressed("S") )
+				speed = Util.accelerate(speed, breaking, dt);
+			else speed = Util.accelerate(speed, decel, dt);
+
+			if (!Collision.inside(originPoint, Track)) {
+            	if (speed > offRoadLimit)
+            		speed = Util.accelerate(speed, offRoadDecel, dt);
+            }
+
+            if (Collision.onDirection(originPoint, Car, onDirectionReferences)) console.log("correct");
+            else console.log("wrong");
+
+			// limit speed
+			speed = Util.limit(speed, 0, maxSpeed);
+
+			if ( keyboard.pressed("Q") )
+				Car.translateX( 0.1 );
+			if ( keyboard.pressed("E") )
+				Car.translateX(  -0.1 );
+
+			// rotate left/right/up/down
+			if ( keyboard.pressed("A") )
+				Car.rotateOnAxis( new THREE.Vector3(0,1,0), rotateAngle);
+			if ( keyboard.pressed("D") )
+				Car.rotateOnAxis( new THREE.Vector3(0,1,0), -rotateAngle);
+			
+			if ( keyboard.pressed("Z") ) {
+				Car.position.set(0,-0.5,0);
+				Car.rotation.set(0,0,0);
+			}
+
+			if (Collision.walls(Car, collidableMeshList)) {
+				speed = 0;
+				Car.translateZ(-0.5);
+			}
+
+            if (speed > 0) { // if speed > 0, move Car forward
+				Car.translateZ(ds);
+			}
+
+			// update hud
+			updateHud('speed', Math.round(speed));
+
+			// END UPDATE CAR POSITION FUNCTION
+		}
+
+		function updateHud(key, value) {
+			// accessing DOM can be slow, so only do it if value has changed
+	    	if (hud[key].value !== value) {
+	    		hud[key].value = value;
+	    		hud[key].dom.innerHTML = value;
+	    	}
+
+	    	// END UPDATE HUD FUNCTION
+	    }
+
+		function render() {
+
+			renderer.render( scene, camera );
+
+			// END RENDER FUNCTION
+		}
+
+		</script>
+	</body>
+</html>
