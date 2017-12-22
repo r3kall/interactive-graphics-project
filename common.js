@@ -71,11 +71,11 @@ var Collision = {
  var Environment = {
 
     createFloor:  function(scene) {
-        var floorTexture = new THREE.TextureLoader().load( 'images/asf1.png' );
+        var floorTexture = new THREE.TextureLoader().load( 'images/grassmix.png' );
         floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping;
-        floorTexture.repeat.set( 128, 128 );
+        floorTexture.repeat.set( 128, 64 );
 
-        var floorMaterial = new THREE.MeshPhongMaterial( { map: floorTexture, side: THREE.DoubleSide} );
+        var floorMaterial = new THREE.MeshLambertMaterial( { map: floorTexture, side: THREE.BackSide} );
         var floorGeometry = new THREE.PlaneGeometry(1024, 1024, 8, 8);
         var floor = new THREE.Mesh(floorGeometry, floorMaterial);
 
@@ -98,7 +98,10 @@ var Collision = {
 
     createWalls:  function(scene) {
         var group = new THREE.Group();
-        var material = new THREE.MeshBasicMaterial( { color: 0x00fffe, side: THREE.DoubleSide } );
+        var texture = new THREE.TextureLoader().load( 'images/wall3.jpg' );
+        texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+        texture.repeat.set( 128, 4 );
+        var material = new THREE.MeshBasicMaterial( { map: texture, side: THREE.DoubleSide } );
 
         var wallAGeometry = new THREE.CubeGeometry( 560, SETTINGS.WALLS_HEIGHT, 1 );  
         wallA = new THREE.Mesh( wallAGeometry, material );
@@ -127,7 +130,10 @@ var Collision = {
 
     createIWalls:  function(scene) {
         var igroup = new THREE.Group();
-        var material = new THREE.MeshBasicMaterial({ color: 0x000000, side: THREE.DoubleSide });
+        var texture = new THREE.TextureLoader().load( 'images/wall2.jpg' );
+        texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+        texture.repeat.set( 1, 2 );
+        var material = new THREE.MeshBasicMaterial( { map: texture, side: THREE.DoubleSide } );
 
         var iwallAGeometry = new THREE.CubeGeometry(390, SETTINGS.WALLS_HEIGHT, 1);
         iwallN = new THREE.Mesh(iwallAGeometry, material);
@@ -287,8 +293,12 @@ var Collision = {
 
         var extrudeSettings = { amount: 8, bevelEnabled: true, bevelSegments: 2, steps: 2, bevelSize: 1, bevelThickness: 1 };
 
+        var texture = new THREE.TextureLoader().load( 'images/road1.jpg' );
+        //texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+        texture.repeat.set( 64, 64 );
+
         var geometry = new THREE.ShapeBufferGeometry( trackShape );
-        var mesh = new THREE.Mesh( geometry, new THREE.MeshPhongMaterial( { color: 0x00ffff, side: THREE.DoubleSide} ) );
+        var mesh = new THREE.Mesh( geometry, new THREE.MeshPhongMaterial( { map: texture, side: THREE.DoubleSide} ) );
 
         mesh.position.set(SETTINGS.TRACK_POSITION['x'], SETTINGS.TRACK_POSITION['y'], SETTINGS.TRACK_POSITION['z']);
         mesh.rotation.set(SETTINGS.WORLD_ROTATION['x'], SETTINGS.WORLD_ROTATION['y'], SETTINGS.WORLD_ROTATION['z']);
