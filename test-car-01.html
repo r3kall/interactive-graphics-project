@@ -8,11 +8,24 @@
 	</head>
 	<body>
 
-		<div id="container">
-			<div id="hud">
-	      		<span id="speed" class="hud"><span id="speed_value" class="value">0</span> kmh</span>
-	      	</div>
-	    </div>
+		<div id="container"></div>
+
+	    <div id="fast" class="hud"><span id="fast_value" class="value">0</span> km/h</div>
+        <style>
+            #fast {
+                position: absolute;
+                bottom: 40px;
+                right: 60px;
+                width: 100%;
+                text-align: right;
+                z-index: 100;
+                display: block;
+                font-size: 500%;
+                margin-right: 30px;
+                color: white;
+                font-family: Stencil;
+            }
+        </style>
 
 		<script src="js/three.js"></script>
 		<script src="js/stats.js"></script>
@@ -43,17 +56,15 @@
         var onDirectionReferences = [];
 
         // car variables
-        var speed 		 = 0; 			   // current speed
-        var maxSpeed 	 = 300; 		   // top speed
-        var accel 	 	 = maxSpeed/10;    // acceleration rate
+        var speed 		 = 0; 			  // current speed
+        var maxSpeed 	 = 300; 		  // top speed
+        var accel 	 	 = maxSpeed/10;   // acceleration rate
         var breaking 	 = -maxSpeed/6;   // deceleration when breaking
-        var decel 	 	 = -maxSpeed/100;  // deceleration rate
+        var decel 	 	 = -maxSpeed/100; // deceleration rate
         var offRoadDecel = -maxSpeed/9;   // off road deceleration
-    	var offRoadLimit =  maxSpeed/4;    // off road top speed (deceleration no longer applies)
+    	var offRoadLimit =  maxSpeed/4;   // off road top speed (deceleration no longer applies)
 
-    	var hud = {
-	      speed: { value: null, dom: document.getElementById('speed_value')}
-	    }
+	    var fast = { value: null, dom: document.getElementById('fast_value')}
 
 	    var canvas;
 
@@ -103,6 +114,7 @@
 			Environment.createSky(scene);    // create skybox
 
 			Track = Environment.createTrack(scene);  // create and get the Race Track
+			Environment.createLine(scene);  // create start/finish line
 
 			var wallsGroup = Environment.createWalls(scene).children;  // create and get an array of walls
 			for (var i=0; i < wallsGroup.length; i++)
@@ -219,10 +231,10 @@
 
 		function updateHud(key, value) {
 			// accessing DOM can be slow, so only do it if value has changed
-	    	if (hud[key].value !== value) {
-	    		hud[key].value = value;
-	    		hud[key].dom.innerHTML = value;
-	    	}
+	    	if (fast.value !== value) {
+                fast.value = value;
+                fast.dom.innerHTML = value;
+            }
 
 	    	// END UPDATE HUD FUNCTION
 	    }

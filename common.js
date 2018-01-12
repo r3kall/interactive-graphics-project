@@ -305,6 +305,71 @@ var Collision = {
         mesh.scale.set(SETTINGS.TRACK_SCALE['x'], SETTINGS.TRACK_SCALE['y'], SETTINGS.TRACK_SCALE['z']);
         scene.add(mesh);
         return mesh;
+    },
+
+    createLine:  function(scene) {
+        var lineTexture = new THREE.TextureLoader().load( 'images/check.jpg' );
+        lineTexture.wrapS = lineTexture.wrapT = THREE.RepeatWrapping;
+        lineTexture.repeat.set( 8, 1 );
+
+        var lineMaterial = new THREE.MeshLambertMaterial( { map: lineTexture, side: THREE.BackSide} );
+        var lineGeometry = new THREE.PlaneGeometry(20, 2);
+        var line = new THREE.Mesh(lineGeometry, lineMaterial);
+
+        line.position.set(SETTINGS.LINE_POSITION['x'], SETTINGS.LINE_POSITION['y'], SETTINGS.LINE_POSITION['z']);
+        line.rotation.set(SETTINGS.WORLD_ROTATION['x'], SETTINGS.WORLD_ROTATION['y'], SETTINGS.WORLD_ROTATION['z']);
+
+        scene.add(line);
+    },
+
+    createTrees:  function(scene) {
+        geometry = new THREE.BoxGeometry( 1, 1, 1 );
+
+        var leaveDarkMaterial = new THREE.MeshLambertMaterial( { color: 0x91E56E } );
+        var leaveLightMaterial = new THREE.MeshLambertMaterial( { color: 0xA2FF7A } );
+        var leaveDarkDarkMaterial = new THREE.MeshLambertMaterial( { color: 0x71B356 } );
+        var stemMaterial = new THREE.MeshLambertMaterial( { color: 0x7D5A4F } );
+
+        var stem = new THREE.Mesh( geometry, stemMaterial );
+        stem.position.set( 0, 0, 0 );
+        stem.scale.set( 0.3, 1.5, 0.3 );
+
+        var squareLeave01 = new THREE.Mesh( geometry, leaveDarkMaterial );
+        squareLeave01.position.set( 0.5, 1.6, 0.5 );
+        squareLeave01.scale.set( 0.8, 0.8, 0.8 );
+
+        var squareLeave02 = new THREE.Mesh( geometry, leaveDarkMaterial );
+        squareLeave02.position.set( -0.4, 1.3, -0.4 );
+        squareLeave02.scale.set( 0.7, 0.7, 0.7 );
+
+        var squareLeave03 = new THREE.Mesh( geometry, leaveDarkMaterial );
+        squareLeave03.position.set( 0.4, 1.7, -0.5 );
+        squareLeave03.scale.set( 0.7, 0.7, 0.7 );
+
+        var leaveDark = new THREE.Mesh( geometry, leaveDarkMaterial );
+        leaveDark.position.set( 0, 1.2, 0 );
+        leaveDark.scale.set( 1, 2, 1 );
+
+        var leaveLight = new THREE.Mesh( geometry, leaveLightMaterial );
+        leaveLight.position.set( 0, 1.2, 0 );
+        leaveLight.scale.set( 1.1, 0.5, 1.1 );
+
+        tree = new THREE.Group();
+        tree.add( leaveDark );
+        tree.add( leaveLight );
+        tree.add( squareLeave01 );
+        tree.add( squareLeave02 );
+        tree.add( squareLeave03 );
+        tree.add( stem );
+
+        tree.rotation.y = 1;
+        tree.rotation.x = 0.5;
+
+        tree.position.set(-5, 0, 20);
+        tree.rotation.set(0, Math.PI, 0);
+
+
+        scene.add( tree );
     }
  }
 
@@ -313,6 +378,7 @@ var SETTINGS = {
     WORLD_ROTATION  :   {x: Math.PI/2, y:     0, z: 0},
     TRACK_POSITION  :   {x:         0, y: -0.45, z: 0},
     TRACK_SCALE     :   {x:         2, y:     2, z: 2},
+    LINE_POSITION   :   {x:       -30, y: -0.42, z: 10},
     WALLS_HEIGHT    :   5,
 
 }
