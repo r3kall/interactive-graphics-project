@@ -11,6 +11,7 @@
 		<div id="container"></div>
 
 	    <div id="fast" class="hud"><span id="fast_value" class="value">0</span> km/h</div>
+	    <div id="lap" class="hud"><span id="lap_value" class="value">0</span></div>
         <style>
             #fast {
                 position: absolute;
@@ -22,6 +23,18 @@
                 display: block;
                 font-size: 500%;
                 margin-right: 30px;
+                color: white;
+                font-family: Stencil;
+            }
+            #lap {
+                position: absolute;
+                bottom: 40px;
+                left: 100px;
+                width: 100%;
+                text-align: left;
+                z-index: 100;
+                display: block;
+                font-size: 500%;
                 color: white;
                 font-family: Stencil;
             }
@@ -54,6 +67,9 @@
         var Car, Track;
         var collidableMeshList = [];
         var onDirectionReferences = [];
+        var onLapReferences = [];
+        var onLapFlags = [];
+        var lineLap, numLap, lastLapRef;
 
         // car variables
         var speed 		 = 0; 			  // current speed
@@ -64,7 +80,8 @@
         var offRoadDecel = -maxSpeed/9;   // off road deceleration
     	var offRoadLimit =  maxSpeed/4;   // off road top speed (deceleration no longer applies)
 
-	    var fast = { value: null, dom: document.getElementById('fast_value')}
+	    var fast = { value: null, dom: document.getElementById('fast_value') }
+	    var lap  = { value: 0, dom: document.getElementById('lap_value') }
 
 	    var canvas;
 
@@ -114,7 +131,7 @@
 			Environment.createSky(scene);    // create skybox
 
 			Track = Environment.createTrack(scene);  // create and get the Race Track
-			Environment.createLine(scene);  // create start/finish line
+			lineLap = Environment.createLine(scene);  // create start/finish line
 
 			var wallsGroup = Environment.createWalls(scene).children;  // create and get an array of walls
 			for (var i=0; i < wallsGroup.length; i++)
@@ -127,6 +144,9 @@
 			}
 
 			Environment.createCity(scene);
+			onLapReferences = Collision.referenceLap(scene);
+			for (var i=0; i<onLapReferences.length; i++)
+				onLapFlags.push(false);
 
             // CAR TEXTURE
             var texture = new THREE.Texture();
@@ -192,8 +212,24 @@
             		speed = Util.accelerate(speed, offRoadDecel, dt);
             }
 
-            if (Collision.onDirection(originPoint, Car, onDirectionReferences)) console.log("correct");
-            else console.log("wrong");
+            //if (Collision.onDirection(originPoint, Car, onDirectionReferences)) console.log("correct");
+            //else console.log("wrong");
+
+            var flag = Collision.onLap(originPoint, Car, onLapReferences);
+            if (flag >= 0) {
+            	onLapFlags[flag] = true;
+            	lastLapRef = flag;
+            	// console.log(onLapFlags);
+            }
+
+            if (checkLapFlags(onLapFlags)) {
+            	if (Collision.inside(originPoint, lineLap)) {
+            		lap.value++;
+            		lap.dom.innerHTML = lap.value;
+            		resetLapFlags(onLapFlags);
+            		//console.log(onLapFlags);
+            	}
+            }
 
 			// limit speed
 			speed = Util.limit(speed, 0, maxSpeed);
@@ -224,19 +260,36 @@
 			}
 
 			// update hud
-			updateHud('speed', Math.round(speed));
+			updateSpeed(Math.round(speed));
 
-			// END UPDATE CAR POSITION FUNCTION
+			// END FUNCTION
 		}
 
-		function updateHud(key, value) {
+		function updateSpeed(value) {
 			// accessing DOM can be slow, so only do it if value has changed
 	    	if (fast.value !== value) {
                 fast.value = value;
                 fast.dom.innerHTML = value;
             }
 
-	    	// END UPDATE HUD FUNCTION
+	    	// END FUNCTION
+	    }
+
+	    function checkLapFlags(flags) {
+	    	for (var i=0; i<flags.length; i++) {
+	    		if (!flags[i]) return false;
+	    	}
+	    	return true;
+
+	    	// END FUNCTION
+	    }
+
+	    function resetLapFlags(flags) {
+	    	for (var i=0; i<flags.length; i++) {
+	    		flags[i] = false;
+	    	}
+
+	    	// END FUNCTION
 	    }
 
 		function render() {

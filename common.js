@@ -50,16 +50,53 @@ var Collision = {
         return false;
 	},
 
-    onDirection:  function(point, object, collidable) {
+    onDirection:  function(point, object, collidables) {
 
         var mat = new THREE.Matrix4().extractRotation(object.matrix);
         var direction = new THREE.Vector3(-1, 0, 0);
         direction = direction.applyMatrix4(mat);
 
         var ondirectionRay = new THREE.Raycaster(point, direction.normalize());
-        var ondirectionResult = ondirectionRay.intersectObjects(collidable);
+        var ondirectionResult = ondirectionRay.intersectObjects(collidables);
         if (ondirectionResult.length > 0) return false;
         return true;
+    },
+
+    referenceLap:  function(scene) {
+
+        function defBox() {
+            var defaultPartGeometry = new THREE.BoxGeometry(1, 5, 1);
+            var defaultPartMaterial = new THREE.MeshBasicMaterial({color: 0xff0000, alphaTest: 0, visible: false});
+            var defaultMesh = new THREE.Mesh(defaultPartGeometry, defaultPartMaterial);
+            return defaultMesh;
+        }
+
+        var references = [];
+        for (var i=0; i<3; i++)
+            references.push(defBox());
+
+        references[0].position.set(-48, SETTINGS.WORLD_POSITION['y'], 88);
+        references[1].position.set(512, SETTINGS.WORLD_POSITION['y'], 16);
+        references[2].position.set(232, SETTINGS.WORLD_POSITION['y'], -96);
+
+        for (var i=0; i<3; i++)
+            scene.add(references[i]);
+
+        return references;
+    },
+
+    onLap:  function(point, object, collidables) {
+        var mat = new THREE.Matrix4().extractRotation(object.matrix);
+        var direction = new THREE.Vector3(-1, 0, 0);
+        direction = direction.applyMatrix4(mat);
+
+        var onLapRay = new THREE.Raycaster(point, direction.normalize(), 0, 100);
+        for (var i=0; i<collidables.length; i++) {
+            var onLapResult = onLapRay.intersectObject(collidables[i]);
+            if (onLapResult.length > 0) return i;
+        }
+        
+        return -1;
     }
 
 }
@@ -313,13 +350,15 @@ var Collision = {
         lineTexture.repeat.set( 8, 1 );
 
         var lineMaterial = new THREE.MeshLambertMaterial( { map: lineTexture, side: THREE.BackSide} );
-        var lineGeometry = new THREE.PlaneGeometry(20, 2);
+        //var lineGeometry = new THREE.PlaneGeometry(20, 2);
+        var lineGeometry = new THREE.BoxGeometry(20, 2, 0.000001);
         var line = new THREE.Mesh(lineGeometry, lineMaterial);
 
         line.position.set(SETTINGS.LINE_POSITION['x'], SETTINGS.LINE_POSITION['y'], SETTINGS.LINE_POSITION['z']);
         line.rotation.set(SETTINGS.WORLD_ROTATION['x'], SETTINGS.WORLD_ROTATION['y'], SETTINGS.WORLD_ROTATION['z']);
 
         scene.add(line);
+        return line;
     },
 
     createTrees:  function(scene) {
