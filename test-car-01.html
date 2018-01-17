@@ -184,9 +184,11 @@
                 container.appendChild(stats.domElement);
 
                 // LIGHT
-                var light = new THREE.PointLight(0xffffff);
-                light.position.set(0, 250, 0);
-                scene.add(light);
+                if (night == false) {
+                    var light = new THREE.PointLight(0xffffff);
+                    light.position.set(0, 250, 0);
+                    scene.add(light);
+                }
 
                 var axes = new THREE.AxisHelper(100);
                 scene.add(axes);
@@ -236,6 +238,42 @@
                     scene.add(Car);
                     Car.add(camera);
                 });
+
+                if (night == true) {
+                    //LAMP LIGHT
+                    var spotLight = new THREE.SpotLight(0xffffff);
+                    spotLight.position.set(-46, 30, 50);
+                    spotLight.angle = Math.PI / 5;
+                    spotLight.castShadow = true;
+                    spotLight.distance = 1000;
+                    scene.add(spotLight);
+                    lightHelper = new THREE.SpotLightHelper(spotLight);
+                    scene.add(lightHelper);
+
+                    var spotLight2 = spotLight.clone();
+                    spotLight2.angle = Math.PI;
+                    spotLight2.position.set(512, 30, -95);
+                    scene.add(spotLight2);
+
+                    var spotLight3 = spotLight.clone();
+                    spotLight3.angle = Math.PI;
+                    spotLight3.position.set(512, 30, 272);
+                    scene.add(spotLight3);
+
+                    var spotLight4 = spotLight.clone();
+                    spotLight4.angle = Math.PI;
+                    spotLight4.position.set(76, 30, 80);
+                    scene.add(spotLight4);
+
+                    //LAMP utilizzata per posizionare la luce
+                    var sphereGeometry = new THREE.SphereGeometry(0.7, 16, 8);
+                    var darkMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
+                    var wireframeMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00, wireframe: true, transparent: true });
+                    var shape = THREE.SceneUtils.createMultiMaterialObject(sphereGeometry, [darkMaterial, wireframeMaterial]);
+                    //shape.position.set(-46, 30, 50);
+                    shape.position.set(76, 0, 80);
+                    //scene.add(shape);
+                }
 
                 // END INIT
             }
