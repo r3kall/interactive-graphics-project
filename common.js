@@ -125,7 +125,12 @@ var Collision = {
     createSky:  function(scene) {
 
         var skySphere = new THREE.SphereGeometry(2048, 128, 128);
-        var skyTexture = new THREE.TextureLoader().load("images/Sky.jpg");
+        if (night == false) {
+            var skyTexture = new THREE.TextureLoader().load("images/Sky.jpg");
+        } else {
+            var skyTexture = new THREE.TextureLoader().load("images/night.jpg");
+        }
+        
         skyTexture.wrapS = skyTexture.wrapT = THREE.RepeatWrapping;
 
         var skyMaterial = new THREE.MeshBasicMaterial({map: skyTexture, side: THREE.DoubleSide});
