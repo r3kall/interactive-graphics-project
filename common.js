@@ -90,7 +90,7 @@ var Collision = {
         var direction = new THREE.Vector3(-1, 0, 0);
         direction = direction.applyMatrix4(mat);
 
-        var onLapRay = new THREE.Raycaster(point, direction.normalize(), 0, 100);
+        var onLapRay = new THREE.Raycaster(point, direction.normalize(), 0, 120);
         for (var i=0; i<collidables.length; i++) {
             var onLapResult = onLapRay.intersectObject(collidables[i]);
             if (onLapResult.length > 0) return i;
@@ -128,7 +128,7 @@ var Collision = {
         if (night == false) {
             var skyTexture = new THREE.TextureLoader().load("images/Sky.jpg");
         } else {
-            var skyTexture = new THREE.TextureLoader().load("images/night.jpg");
+            var skyTexture = new THREE.TextureLoader().load("images/night.png");
         }
         
         skyTexture.wrapS = skyTexture.wrapT = THREE.RepeatWrapping;

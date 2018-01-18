@@ -16,6 +16,7 @@
         </div>
         <div id="fast" class="hud"><span id="fast_value" class="value">0</span> km/h</div>
         <div id="lap" class="hud"><span id="lap_value" class="value">0</span></div>
+        <div id="dir" class="hud"><span id="dir_value" class="value"></span></div>
         <style>
             #fast {
                 position: absolute;
@@ -33,7 +34,7 @@
             #lap {
                 position: absolute;
                 bottom: 40px;
-                left: 100px;
+                left: 220px;
                 width: 100%;
                 text-align: left;
                 z-index: 100;
@@ -42,6 +43,19 @@
                 color: white;
                 font-family: Stencil;
             }
+            #dir {
+                position: absolute;
+                top: 60px;
+                left: 600px;
+                width: 100%;
+                text-align: left;
+                z-index: 100;
+                display: block;
+                font-size: 500%;
+                color: red;
+                font-family: Stencil;
+            }
+
             .container {
                 position: relative;
                 height: 100%;
@@ -124,7 +138,7 @@
             var onDirectionReferences = [];
             var onLapReferences = [];
             var onLapFlags = [];
-            var lineLap, numLap, lastLapRef;
+            var lineLap, numLap;
 
             // car variables
             var speed = 0; 			  // current speed
@@ -136,7 +150,8 @@
             var offRoadLimit = maxSpeed / 4;   // off road top speed (deceleration no longer applies)
 
             var fast = { value: null, dom: document.getElementById('fast_value') }
-            var lap = { value: 0, dom: document.getElementById('lap_value') }
+            var lap  = { value: 0, dom: document.getElementById('lap_value') }
+            var dir  = { value: true, dom: document.getElementById('dir_value') }
 
             var canvas;
 
@@ -315,22 +330,27 @@
                         speed = Util.accelerate(speed, offRoadDecel, dt);
                 }
 
-                //if (Collision.onDirection(originPoint, Car, onDirectionReferences)) console.log("correct");
-                //else console.log("wrong");
-
-                var flag = Collision.onLap(originPoint, Car, onLapReferences);
-                if (flag >= 0) {
-                    onLapFlags[flag] = true;
-                    lastLapRef = flag;
-                    // console.log(onLapFlags);
+                var dirFlag = Collision.onDirection(originPoint, Car, onDirectionReferences);
+                if (dirFlag) {
+                    if (!dir.value) {
+                        dir.value = true;
+                        dir.dom.innerHTML = "";
+                    }
+                } else {
+                    if (dir.value) {
+                        dir.value = false;
+                        dir.dom.innerHTML = "wrong direction";
+                    }
                 }
 
+                var flag = Collision.onLap(originPoint, Car, onLapReferences);
+                if (flag >= 0) onLapFlags[flag] = true;
+
                 if (checkLapFlags(onLapFlags)) {
-                    if (Collision.inside(originPoint, lineLap)) {
+                    if (Collision.inside(originPoint, lineLap) && dirFlag) {
                         lap.value++;
                         lap.dom.innerHTML = lap.value;
                         resetLapFlags(onLapFlags);
-                        //console.log(onLapFlags);
                     }
                 }
 

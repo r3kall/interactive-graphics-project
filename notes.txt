@@ -1,5 +1,5 @@
 
-1. finire logica "giri di pista", aggiungere linea di start/finish gara.
+1. logica giri --> OK
 2. Luci, impostazioni giorno/notte, no mini-lampioncini (da piazzare a mano, un incubo), ma 4-8 mega fari stile stadio (ovviamente per la notte).
 3. sfondo esterno.
 4. oggetti interni:
