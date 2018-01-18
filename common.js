@@ -90,7 +90,7 @@ var Collision = {
         var direction = new THREE.Vector3(-1, 0, 0);
         direction = direction.applyMatrix4(mat);
 
-        var onLapRay = new THREE.Raycaster(point, direction.normalize(), 0, 120);
+        var onLapRay = new THREE.Raycaster(point, direction.normalize(), 0, 140);
         for (var i=0; i<collidables.length; i++) {
             var onLapResult = onLapRay.intersectObject(collidables[i]);
             if (onLapResult.length > 0) return i;
@@ -112,7 +112,7 @@ var Collision = {
         floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping;
         floorTexture.repeat.set( 128, 64 );
 
-        var floorMaterial = new THREE.MeshLambertMaterial( { map: floorTexture, side: THREE.BackSide} );
+        var floorMaterial = new THREE.MeshLambertMaterial( { map: floorTexture, side: THREE.BackSide } );
         var floorGeometry = new THREE.PlaneGeometry(1024, 1024, 8, 8);
         var floor = new THREE.Mesh(floorGeometry, floorMaterial);
 
@@ -143,7 +143,7 @@ var Collision = {
         var texture = new THREE.TextureLoader().load( 'images/wall3.jpg' );
         texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
         texture.repeat.set( 128, 4 );
-        var material = new THREE.MeshBasicMaterial( { map: texture, side: THREE.DoubleSide } );
+        var material = new THREE.MeshLambertMaterial( { map: texture, side: THREE.DoubleSide } );
 
         var wallAGeometry = new THREE.CubeGeometry( 560, SETTINGS.WALLS_HEIGHT, 1 );  
         wallA = new THREE.Mesh( wallAGeometry, material );
@@ -175,7 +175,7 @@ var Collision = {
         var texture = new THREE.TextureLoader().load( 'images/wall2.jpg' );
         texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
         texture.repeat.set( 1, 2 );
-        var material = new THREE.MeshBasicMaterial( { map: texture, side: THREE.DoubleSide } );
+        var material = new THREE.MeshLambertMaterial( { map: texture, side: THREE.DoubleSide } );
 
         var iwallAGeometry = new THREE.CubeGeometry(390, SETTINGS.WALLS_HEIGHT, 1);
         iwallN = new THREE.Mesh(iwallAGeometry, material);
@@ -414,6 +414,19 @@ var Collision = {
 
 
         scene.add( tree );
+    },
+
+    createTower:  function(scene) {
+        var texture = new THREE.TextureLoader().load( 'images/brick.jpg' );
+        texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+        texture.repeat.set( 8, 8 );
+
+        var material = new THREE.MeshLambertMaterial( { map: texture } );
+        var geometry = new THREE.CylinderGeometry(12, 12, 32, 32, 32);
+        var tower = new THREE.Mesh(geometry, material);
+        tower.position.set(180, SETTINGS.WORLD_POSITION['y'], 180);
+
+        scene.add(tower);
     }
  }
 

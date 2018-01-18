@@ -200,9 +200,14 @@
 
                 // LIGHT
                 if (night == false) {
-                    var light = new THREE.PointLight(0xffffff);
-                    light.position.set(0, 250, 0);
-                    scene.add(light);
+                    var hemiLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 0.5 );
+                    hemiLight.position.set( 0, 500, 0 );
+                    scene.add( hemiLight );
+
+                    var dirLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
+                    dirLight.position.set( -1, 1.25, 1 );
+                    dirLight.position.multiplyScalar( 50 );
+                    scene.add( dirLight );
                 }
 
                 var axes = new THREE.AxisHelper(100);
@@ -226,6 +231,7 @@
                 }
 
                 Environment.createCity(scene);
+                Environment.createTower(scene);
                 onLapReferences = Collision.referenceLap(scene);
                 for (var i = 0; i < onLapReferences.length; i++)
                     onLapFlags.push(false);
