@@ -367,53 +367,69 @@ var Collision = {
     },
 
     createTrees:  function(scene) {
-        geometry = new THREE.BoxGeometry( 1, 1, 1 );
+        function createTree(x, y, z) {
+            geometry = new THREE.BoxGeometry( 1, 1, 1 );
 
-        var leaveDarkMaterial = new THREE.MeshLambertMaterial( { color: 0x91E56E } );
-        var leaveLightMaterial = new THREE.MeshLambertMaterial( { color: 0xA2FF7A } );
-        var leaveDarkDarkMaterial = new THREE.MeshLambertMaterial( { color: 0x71B356 } );
-        var stemMaterial = new THREE.MeshLambertMaterial( { color: 0x7D5A4F } );
+            var leaveDarkMaterial = new THREE.MeshLambertMaterial( { color: 0x91E56E } );
+            var leaveLightMaterial = new THREE.MeshLambertMaterial( { color: 0xA2FF7A } );
+            var leaveDarkDarkMaterial = new THREE.MeshLambertMaterial( { color: 0x71B356 } );
+            var stemMaterial = new THREE.MeshLambertMaterial( { color: 0x7D5A4F } );
 
-        var stem = new THREE.Mesh( geometry, stemMaterial );
-        stem.position.set( 0, 0, 0 );
-        stem.scale.set( 0.3, 1.5, 0.3 );
+            var stem = new THREE.Mesh( geometry, stemMaterial );
+            stem.position.set( 0, 0, 0 );
+            stem.scale.set( 0.3, 1.5, 0.3 );
 
-        var squareLeave01 = new THREE.Mesh( geometry, leaveDarkMaterial );
-        squareLeave01.position.set( 0.5, 1.6, 0.5 );
-        squareLeave01.scale.set( 0.8, 0.8, 0.8 );
+            var squareLeave01 = new THREE.Mesh( geometry, leaveDarkMaterial );
+            squareLeave01.position.set( 0.5, 1.6, 0.5 );
+            squareLeave01.scale.set( 0.8, 0.8, 0.8 );
 
-        var squareLeave02 = new THREE.Mesh( geometry, leaveDarkMaterial );
-        squareLeave02.position.set( -0.4, 1.3, -0.4 );
-        squareLeave02.scale.set( 0.7, 0.7, 0.7 );
+            var squareLeave02 = new THREE.Mesh( geometry, leaveDarkMaterial );
+            squareLeave02.position.set( -0.4, 1.3, -0.4 );
+            squareLeave02.scale.set( 0.7, 0.7, 0.7 );
 
-        var squareLeave03 = new THREE.Mesh( geometry, leaveDarkMaterial );
-        squareLeave03.position.set( 0.4, 1.7, -0.5 );
-        squareLeave03.scale.set( 0.7, 0.7, 0.7 );
+            var squareLeave03 = new THREE.Mesh( geometry, leaveDarkMaterial );
+            squareLeave03.position.set( 0.4, 1.7, -0.5 );
+            squareLeave03.scale.set( 0.7, 0.7, 0.7 );
 
-        var leaveDark = new THREE.Mesh( geometry, leaveDarkMaterial );
-        leaveDark.position.set( 0, 1.2, 0 );
-        leaveDark.scale.set( 1, 2, 1 );
+            var leaveDark = new THREE.Mesh( geometry, leaveDarkMaterial );
+            leaveDark.position.set( 0, 1.2, 0 );
+            leaveDark.scale.set( 1, 2, 1 );
 
-        var leaveLight = new THREE.Mesh( geometry, leaveLightMaterial );
-        leaveLight.position.set( 0, 1.2, 0 );
-        leaveLight.scale.set( 1.1, 0.5, 1.1 );
+            var leaveLight = new THREE.Mesh( geometry, leaveLightMaterial );
+            leaveLight.position.set( 0, 1.2, 0 );
+            leaveLight.scale.set( 1.1, 0.5, 1.1 );
 
-        tree = new THREE.Group();
-        tree.add( leaveDark );
-        tree.add( leaveLight );
-        tree.add( squareLeave01 );
-        tree.add( squareLeave02 );
-        tree.add( squareLeave03 );
-        tree.add( stem );
+            tree = new THREE.Group();
+            tree.add( leaveDark );
+            tree.add( leaveLight );
+            tree.add( squareLeave01 );
+            tree.add( squareLeave02 );
+            tree.add( squareLeave03 );
+            tree.add( stem );
+            tree.position.set(x, y, z);
 
-        tree.rotation.y = 1;
-        tree.rotation.x = 0.5;
+            return tree;
+        }
 
-        tree.position.set(-5, 0, 20);
-        tree.rotation.set(0, Math.PI, 0);
+        var xStart = 200;
+        var zStart = 200;
+        var xLimit = 500;
+        var zLimit = 270;
+        var xOffset = 1;
+        var zOffset = 1;
 
+        var trees = new THREE.Group();
+        while (xStart + xOffset < xLimit) {
+            var zR = Math.random();
+            while (zStart + zOffset < zLimit) {
+                trees.add(createTree(xStart+xOffset, 0, zStart+zOffset));
+                if (Math.random() < 0.05) zOffset += zR + 4;
+                else zOffset += zR + Math.random();
+            }
+            xOffset += 1;
+        }
 
-        scene.add( tree );
+        scene.add(trees);
     },
 
     createTower:  function(scene) {

@@ -198,17 +198,7 @@
                 stats.domElement.style.zIndex = 100;
                 container.appendChild(stats.domElement);
 
-                // LIGHT
-                if (night == false) {
-                    var hemiLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 0.5 );
-                    hemiLight.position.set( 0, 500, 0 );
-                    scene.add( hemiLight );
 
-                    var dirLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
-                    dirLight.position.set( -1, 1.25, 1 );
-                    dirLight.position.multiplyScalar( 50 );
-                    scene.add( dirLight );
-                }
 
                 var axes = new THREE.AxisHelper(100);
                 scene.add(axes);
@@ -232,36 +222,23 @@
 
                 Environment.createCity(scene);
                 Environment.createTower(scene);
+                Environment.createTrees(scene);
                 onLapReferences = Collision.referenceLap(scene);
                 for (var i = 0; i < onLapReferences.length; i++)
-                    onLapFlags.push(false);
+                    onLapFlags.push(false);                
 
-                // CAR TEXTURE
-                var texture = new THREE.Texture();
-                var manager = new THREE.LoadingManager();
-                var imageLoader = new THREE.ImageLoader(manager);
-                imageLoader.load("images/camero_map.png", function (image) {
-                    texture.image = image;
-                    texture.needsUpdate = true;
-                });
-                var material = new THREE.MeshBasicMaterial({ map: texture });
+                // LIGHT
+                if (night == false) {
+                    var hemiLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 0.5 );
+                    hemiLight.position.set( 0, 500, 0 );
+                    scene.add( hemiLight );
 
-                // CAR MODEL
-                var objectLoader = new THREE.JSONLoader();
-                objectLoader.load("models/camero-2010-low-poly.json", function (obj) {
-
-                    var carMesh = new THREE.Mesh(obj, material);
-                    carMesh.position.set(-30, -0.5, 20);
-                    carMesh.rotation.set(0, Math.PI, 0);
-                    carMesh.rotateOnAxis(new THREE.Vector3(0, 1, 0), Math.PI);
-
-                    Car = carMesh;
-                    scene.add(Car);
-                    Car.add(camera);
-                });
-
-                if (night == true) {
-                    //LAMP LIGHT
+                    var dirLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
+                    dirLight.position.set( -1, 1.25, 1 );
+                    dirLight.position.multiplyScalar( 50 );
+                    scene.add( dirLight );
+                } else {
+                    // LAMP NIGHT
                     var spotLight = new THREE.SpotLight(0xffffff);
                     spotLight.position.set(-46, 30, 50);
                     spotLight.angle = Math.PI / 5;
@@ -295,6 +272,30 @@
                     shape.position.set(76, 0, 80);
                     //scene.add(shape);
                 }
+
+                // CAR TEXTURE
+                var texture = new THREE.Texture();
+                var manager = new THREE.LoadingManager();
+                var imageLoader = new THREE.ImageLoader(manager);
+                imageLoader.load("images/camero_map.png", function (image) {
+                    texture.image = image;
+                    texture.needsUpdate = true;
+                });
+                var material = new THREE.MeshBasicMaterial({ map: texture });
+
+                // CAR MODEL
+                var objectLoader = new THREE.JSONLoader();
+                objectLoader.load("models/camero-2010-low-poly.json", function (obj) {
+
+                    var carMesh = new THREE.Mesh(obj, material);
+                    carMesh.position.set(-30, -0.5, 20);
+                    carMesh.rotation.set(0, Math.PI, 0);
+                    carMesh.rotateOnAxis(new THREE.Vector3(0, 1, 0), Math.PI);
+
+                    Car = carMesh;
+                    scene.add(Car);
+                    Car.add(camera);
+                });
 
                 // END INIT
             }
