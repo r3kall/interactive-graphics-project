@@ -12,7 +12,14 @@ var Util = {
 
 	timestamp: 		function() 					{ return new Date().getTime(); 					},
 	limit:   		function(value, min, max) 	{ return Math.max(min, Math.min(value, max)); 	},
-	accelerate: 	function(v, accel, dt) 		{ return v + (accel * dt); 						}
+	accelerate: 	function(v, accel, dt) 		{ return v + (accel * dt); 						},
+    random:         function(min, max)          { return (Math.random() * (max - min) + min);   },
+    randomInt:      function(min, max)          { return Math.round(Math.random() * (max - min + 1)) + min;},
+
+    beta:     function(min, max) {
+        var u = Math.random();
+        return (4*u*(1-u)) * (max - min) + min;        
+    }
 }
 
 /* ====================================================================
@@ -412,32 +419,64 @@ var Collision = {
         }
 
         var xStart = 200;
-        var zStart = 200;
+        var zStart = 125;
         var xLimit = 500;
         var zLimit = 270;
-        var xOffset = 1;
-        var zOffset = 1;
-
-        /*var trees = new THREE.Group();
-        while (xStart + xOffset < xLimit) {
-            var zR = Math.random();
-            while (zStart + zOffset < zLimit) {
-                trees.add(createTree(xStart+xOffset, 0, zStart+zOffset));
-                if (Math.random() < 0.05) zOffset += zR + 4;
-                else zOffset += zR + Math.random();
-            }
-            xOffset += 1;
-        }*/
 
         var trees = new THREE.Group();
-        for (var z = xStart; z < xLimit; z += 10) {
-            var zR = Math.random();
-            for (var x = zStart; x < zLimit; x += 10) {
-                trees.add(createTree(z, 0, x));
-                if (Math.random() < 0.05) zOffset += zR + 4;
-                else zOffset += zR + Math.random();
-            }
-            xOffset += 1;
+        for (var i=0; i<100; i++) {
+            var x = Util.beta(xStart, xLimit);
+            var z = Util.beta(zStart, zLimit);
+            trees.add(createTree(x, 0, z));
+        }
+        for (var i=0; i<50; i++) {
+            var x = Util.random(xStart, xLimit);
+            var z = Util.random(zStart, zLimit);
+            trees.add(createTree(x, 0, z));
+        }
+
+        xStart = 125;
+        zStart = 180;
+        xLimit = 200;
+        zLimit = 270;
+
+        for (var i=0; i<20; i++) {
+            var x = Util.beta(xStart, xLimit);
+            var z = Util.randomInt(zStart, zLimit);
+            trees.add(createTree(x, 0, z));
+        }  
+
+        xStart = 480;
+        zStart = 90;
+        xLimit = 500;
+        zLimit = 125;
+
+        for (var i=0; i<10; i++) {
+            var x = Util.beta(xStart, xLimit);
+            var z = Util.beta(zStart, zLimit);
+            trees.add(createTree(x, 0, z));
+        }
+
+        xStart = -10;
+        zStart = -25;
+        xLimit = 10;
+        zLimit = 200;
+
+        for (var i=0; i<20; i++) {
+            var x = Util.random(xStart, xLimit);
+            var z = Util.random(zStart, zLimit);
+            trees.add(createTree(x, 0, z));
+        }
+
+        xStart = 30;
+        zStart = -55;
+        xLimit = 410;
+        zLimit = -45;
+
+        for (var i=0; i<20; i++) {
+            var x = Util.random(xStart, xLimit);
+            var z = Util.random(zStart, zLimit);
+            trees.add(createTree(x, 0, z));
         }
 
         scene.add(trees);
@@ -449,11 +488,12 @@ var Collision = {
         texture.repeat.set( 8, 8 );
 
         var material = new THREE.MeshLambertMaterial( { map: texture } );
-        var geometry = new THREE.CylinderGeometry(12, 12, 32, 32, 32);
+        var geometry = new THREE.CylinderGeometry(8, 8, 16, 8, 8);
         var tower = new THREE.Mesh(geometry, material);
-        tower.position.set(180, SETTINGS.WORLD_POSITION['y'], 180);
+        tower.position.set(160, SETTINGS.WORLD_POSITION['y'], 140);
 
         scene.add(tower);
+        return tower;
     }
  }
 

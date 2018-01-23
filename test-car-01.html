@@ -202,10 +202,8 @@
                 stats.domElement.style.zIndex = 100;
                 container.appendChild(stats.domElement);
 
-
-
-                var axes = new THREE.AxisHelper(100);
-                scene.add(axes);
+                // var axes = new THREE.AxisHelper(100);
+                // scene.add(axes);
 
                 // ENVIRONMENT
                 Environment.createFloor(scene);  // create floor
@@ -225,7 +223,7 @@
                 }
 
                 Environment.createCity(scene);
-                Environment.createTower(scene);
+                collidableMeshList.push(Environment.createTower(scene));
                 Environment.createTrees(scene);
                 onLapReferences = Collision.referenceLap(scene);
                 for (var i = 0; i < onLapReferences.length; i++)
