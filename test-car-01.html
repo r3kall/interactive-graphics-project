@@ -14,8 +14,8 @@
             <button onclick="startwN()" class="btn">Day</button>
             <button onclick="startN()" class="btn2">Night</button>
         </div>
-        <div id="fast" class="hud"><span id="fast_value" class="value">0</span> km/h</div>
-        <div id="lap" class="hud"><span id="lap_value" class="value">0</span></div>
+        <div id="fast" class="hud" style="display: none;"><span id="fast_value" class="value">0</span> km/h</div>
+        <div id="lap" class="hud" style="display: none;"><span id="lap_value" class="value">0</span></div>
         <div id="dir" class="hud"><span id="dir_value" class="value"></span></div>
         <style>
             #fast {
@@ -123,6 +123,10 @@
                 Date: September 2017 (three.js v87).
             */
             $("button").live("click", function () {
+                var x = document.getElementById("fast");
+                var y = document.getElementById("lap");
+                x.style.display = "block";
+                y.style.display = "block";
                 $(this).parent().remove();
             });
             // MAIN

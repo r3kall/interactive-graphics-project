@@ -418,11 +418,22 @@ var Collision = {
         var xOffset = 1;
         var zOffset = 1;
 
-        var trees = new THREE.Group();
+        /*var trees = new THREE.Group();
         while (xStart + xOffset < xLimit) {
             var zR = Math.random();
             while (zStart + zOffset < zLimit) {
                 trees.add(createTree(xStart+xOffset, 0, zStart+zOffset));
+                if (Math.random() < 0.05) zOffset += zR + 4;
+                else zOffset += zR + Math.random();
+            }
+            xOffset += 1;
+        }*/
+
+        var trees = new THREE.Group();
+        for (var z = xStart; z < xLimit; z += 10) {
+            var zR = Math.random();
+            for (var x = zStart; x < zLimit; x += 10) {
+                trees.add(createTree(z, 0, x));
                 if (Math.random() < 0.05) zOffset += zR + 4;
                 else zOffset += zR + Math.random();
             }
