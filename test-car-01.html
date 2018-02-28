@@ -283,7 +283,7 @@
 
                 var geometry = new THREE.CylinderGeometry(0.3, 0.3, 0.3, 32);
                 var materialGum = new THREE.MeshBasicMaterial({ color: 0x000000 });
-                var wheelTex = new THREE.TextureLoader().load("images/mazda.jpg");
+                var wheelTex = new THREE.TextureLoader().load("images/wheel.jpg");
                 var materialTop = new THREE.MeshBasicMaterial({ map: wheelTex });
 
                 var materialsArray = [];
@@ -326,7 +326,7 @@
 
                 // CAR MODEL
                 var objectLoader = new THREE.JSONLoader();
-                objectLoader.load("models/camero-2010-low-poly.json", function (obj) {
+                objectLoader.load("models/camero-2010-no-wheels.json", function (obj) {
 
                     var carMesh = new THREE.Mesh(obj, material);
                     carMesh.position.set(-30, -0.5, 20);
@@ -367,6 +367,8 @@
                 var ds = 2 * speedPercent * dt;
                 var rotateAngle = Math.PI / 2 * 0.025;
                 var originPoint = Car.position.clone();
+
+                WheelFL.rotation.y = 0;
 
                 // update speed
                 if (keyboard.pressed("W"))
@@ -413,8 +415,11 @@
                     Car.translateX(-0.1);
 
                 // rotate left/right/up/down
-                if (keyboard.pressed("A"))
+                if (keyboard.pressed("A")) {
                     Car.rotateOnAxis(new THREE.Vector3(0, 1, 0), rotateAngle);
+                    WheelFL.rotation.x = 0;
+                    WheelFL.rotation.y = Math.PI / 4;
+                }
                 if (keyboard.pressed("D"))
                     Car.rotateOnAxis(new THREE.Vector3(0, 1, 0), -rotateAngle);
 
@@ -444,7 +449,8 @@
                 }
 
                 if (speed > 0) { // if speed > 0, move Car forward
-                    WheelFL.rotateOnAxis(new THREE.Vector3(0, -1, 0), rotateAngle);
+                    WheelFL.rotation.x += rotateAngle;
+                    //WheelFL.rotateOnWorldAxis(new THREE.Vector3(1, 0, 0), rotateAngle);
                     WheelBL.rotateOnAxis(new THREE.Vector3(0, -1, 0), rotateAngle);
                     Car.translateZ(ds);
                 }
