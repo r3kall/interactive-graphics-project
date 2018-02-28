@@ -244,8 +244,7 @@ var Collision = {
             }
         }
 
-        buildingMesh.updateMatrix();
-        cityGeometry.merge(buildingMesh.geometry, buildingMesh.matrix);
+        THREE.GeometryUtils.merge(cityGeometry, buildingMesh);
 
         var btexture = new THREE.Texture(generateTexture());
         btexture.anisotropy = renderer.capabilities.getMaxAnisotropy();

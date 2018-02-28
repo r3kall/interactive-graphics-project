@@ -138,6 +138,7 @@
 
             // global variables
             var Car, Track;
+            var WheelFL, WheelBL;
             var collidableMeshList = [];
             var onDirectionReferences = [];
             var onLapReferences = [];
@@ -280,6 +281,39 @@
                     //scene.add(lightHelper);
                 }
 
+                var geometry = new THREE.CylinderGeometry(0.3, 0.3, 0.3, 32);
+                var materialGum = new THREE.MeshBasicMaterial({ color: 0x000000 });
+                var wheelTex = new THREE.TextureLoader().load("images/mazda.jpg");
+                var materialTop = new THREE.MeshBasicMaterial({ map: wheelTex });
+
+                var materialsArray = [];
+                materialsArray.push(materialGum); //materialindex = 0
+                materialsArray.push(materialTop); // materialindex = 1
+
+                var material = new Array(materialsArray);
+
+                var aFaces = geometry.faces.length;
+                console.log(aFaces);
+                for (var i = 0; i < aFaces; i++) {
+                    if (i < 64) {
+                        geometry.faces[i].materialIndex = 1;
+                    } else if (i > 63 && i < 96) {
+                        geometry.faces[i].materialIndex = 1;
+                    } else {
+                        geometry.faces[i].materialIndex = 1;
+                    }
+                }
+            
+                var cylinder = new THREE.Mesh(geometry, materialTop);
+                cylinder.position.set(0.6, 0.3, 1.1);
+                cylinder.rotation.z = Math.PI / 2;
+
+                var cylinder2 = cylinder.clone();
+                cylinder2.position.set(0.58, 0.3, -0.8);
+               
+                WheelFL = cylinder;
+                WheelBL = cylinder2;
+
                 // CAR TEXTURE
                 var texture = new THREE.Texture();
                 var manager = new THREE.LoadingManager();
@@ -300,6 +334,8 @@
                     carMesh.rotateOnAxis(new THREE.Vector3(0, 1, 0), Math.PI);
 
                     Car = carMesh;
+                    Car.add(cylinder)
+                    Car.add(cylinder2);
                     scene.add(Car);
                     Car.add(camera);
                 });
@@ -387,12 +423,29 @@
                     Car.rotation.set(0, 0, 0);
                 }
 
+                if (keyboard.pressed("C")) {
+                    camera.position.set(10, 3, -8);
+                    camera.lookAt(new THREE.Vector3(0, 0, 0));
+                }
+
+                if (keyboard.pressed("I")) {
+                    camera.position.set(0, 3, -8);
+                    camera.lookAt(new THREE.Vector3(0, 0, 0));
+                }
+
+                if (keyboard.pressed("L")) {
+                    camera.position.set(0, 1, -1);
+                    camera.lookAt(new THREE.Vector3(0, 0, 8));
+                }
+
                 if (Collision.walls(Car, collidableMeshList)) {
                     speed = 0;
                     Car.translateZ(-0.5);
                 }
 
                 if (speed > 0) { // if speed > 0, move Car forward
+                    WheelFL.rotateOnAxis(new THREE.Vector3(0, -1, 0), rotateAngle);
+                    WheelBL.rotateOnAxis(new THREE.Vector3(0, -1, 0), rotateAngle);
                     Car.translateZ(ds);
                 }
 
