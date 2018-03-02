@@ -281,8 +281,9 @@
                     //scene.add(lightHelper);
                 }
 
-                var geometry = new THREE.CylinderGeometry(0.3, 0.3, 0.3, 32);
-                var materialGum = new THREE.MeshBasicMaterial({ color: 0x000000 });
+                var geometry = new THREE.CylinderGeometry(0.3, 0.3, 0.3, 32, 1, false);
+                var rimTex = new THREE.TextureLoader().load("images/rim.jpg");
+                var materialGum = new THREE.MeshBasicMaterial({ map: rimTex });
                 var wheelTex = new THREE.TextureLoader().load("images/wheel.jpg");
                 var materialTop = new THREE.MeshBasicMaterial({ map: wheelTex });
 
@@ -290,22 +291,20 @@
                 materialsArray.push(materialGum); //materialindex = 0
                 materialsArray.push(materialTop); // materialindex = 1
 
-                var material = new Array(materialsArray);
-
                 var aFaces = geometry.faces.length;
                 console.log(aFaces);
                 for (var i = 0; i < aFaces; i++) {
                     if (i < 64) {
-                        geometry.faces[i].materialIndex = 1;
+                        geometry.faces[i].materialIndex = 0;
                     } else if (i > 63 && i < 96) {
                         geometry.faces[i].materialIndex = 1;
                     } else {
                         geometry.faces[i].materialIndex = 1;
                     }
                 }
-            
-                var cylinder = new THREE.Mesh(geometry, materialTop);
-                cylinder.position.set(0.6, 0.3, 1.1);
+
+                var cylinder = new THREE.Mesh(geometry, materialsArray);
+                cylinder.position.set(0.58, 0.3, 1.1);
                 cylinder.rotation.z = Math.PI / 2;
 
                 var cylinder2 = cylinder.clone();
@@ -439,7 +438,7 @@
                 }
 
                 if (keyboard.pressed("L")) {
-                    camera.position.set(0, 1, -1);
+                    camera.position.set(0, 1, 0.4);
                     camera.lookAt(new THREE.Vector3(0, 0, 8));
                 }
 
