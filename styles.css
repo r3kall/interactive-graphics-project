@@ -1,0 +1,154 @@
+.main {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: auto;
+}
+
+.navbar {
+    position: relative;
+    width: 100%;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    background-color: #333;
+}
+
+.navbar .nav-item {
+    display: inline-block;
+    color: white;
+    text-align: center;
+    padding: 6px 18px;
+    text-decoration: none;
+}
+
+.webgl-container {
+    width: 100%;
+    height: auto;
+    margin: auto;
+}
+
+/* race interface */
+#fast {
+    position: absolute;
+    bottom: 40px;
+    right: 60px;
+    width: 100%;
+    text-align: right;
+    z-index: 100;
+    display: block;
+    font-size: 500%;
+    margin-right: 30px;
+    color: white;
+    font-family: Stencil;
+}
+#lap {
+    position: absolute;
+    bottom: 40px;
+    left: 220px;
+    width: 100%;
+    text-align: left;
+    z-index: 100;
+    display: block;
+    font-size: 500%;
+    color: white;
+    font-family: Stencil;
+}
+#dir {
+    position: absolute;
+    top: 60px;
+    left: 600px;
+    width: 100%;
+    text-align: left;
+    z-index: 100;
+    display: block;
+    font-size: 500%;
+    color: red;
+    font-family: Stencil;
+}
+
+/* menu interface */
+.start-container {
+    position: relative;
+    height: 100%;
+    width: 100%;
+}
+.start-container img {
+    width: 100%;
+    height: auto;
+}
+.start-container .btn {
+    position: absolute;
+    top: 25%;
+    left: 20%;
+    display: inline-block;
+    padding: 15px 25px;
+    font-size: 120px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    outline: none;
+    color: #fff;
+    background-color: #4CAF50;
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 9px #999;
+}
+.start-container .btn2 {
+    position: absolute;
+    top: 25%;
+    left: 65%;
+    display: inline-block;
+    padding: 15px 25px;
+    font-size: 120px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    outline: none;
+    color: #fff;
+    background-color: #4CAF50;
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 9px #999;
+}
+.start-container .btn:hover {
+    background-color: black;
+    color: white;
+}
+.start-container .btn2:hover {
+    background-color: black;
+    color: white;
+}
+
+/* navigation bar */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    padding: 12px 16px;
+    z-index: 1;
+}
+
+.dropdown-content span {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    text-align: left;
+}
+
+.dropdown-content span:hover {background-color: #f1f1f1}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}

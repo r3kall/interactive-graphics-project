@@ -4,110 +4,46 @@
 		<meta charset=utf-8>
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 		<title>Interactive Graphics Project - Racing Game</title>
-		<link href="common.css" rel="stylesheet" type="text/css" />
+		<link href="styles.css" rel="stylesheet" type="text/css" />
 	</head>
     <body>
-        <div id="container">
-        </div>
-        <div class="container" id="menu">
-            <img src="images/MainMenu.jpg" alt="Snow" style="width:100%">
-            <button onclick="startwN()" class="btn">Day</button>
-            <button onclick="startN()" class="btn2">Night</button>
-        </div>
-        <div id="fast" class="hud" style="display: none;"><span id="fast_value" class="value">0</span> km/h</div>
-        <div id="lap" class="hud" style="display: none;"><span id="lap_value" class="value">0</span></div>
-        <div id="dir" class="hud"><span id="dir_value" class="value"></span></div>
-        <style>
-            #fast {
-                position: absolute;
-                bottom: 40px;
-                right: 60px;
-                width: 100%;
-                text-align: right;
-                z-index: 100;
-                display: block;
-                font-size: 500%;
-                margin-right: 30px;
-                color: white;
-                font-family: Stencil;
-            }
-            #lap {
-                position: absolute;
-                bottom: 40px;
-                left: 220px;
-                width: 100%;
-                text-align: left;
-                z-index: 100;
-                display: block;
-                font-size: 500%;
-                color: white;
-                font-family: Stencil;
-            }
-            #dir {
-                position: absolute;
-                top: 60px;
-                left: 600px;
-                width: 100%;
-                text-align: left;
-                z-index: 100;
-                display: block;
-                font-size: 500%;
-                color: red;
-                font-family: Stencil;
-            }
+        <div class="main">
 
-            .container {
-                position: relative;
-                height: 100%;
-                width: 100%;
-            }
-            .container img {
-                width: 100%;
-                height: auto;
-            }
-            .container .btn {
-                position: absolute;
-                top: 25%;
-                left: 20%;
-                display: inline-block;
-                padding: 15px 25px;
-                font-size: 120px;
-                cursor: pointer;
-                text-align: center;
-                text-decoration: none;
-                outline: none;
-                color: #fff;
-                background-color: #4CAF50;
-                border: none;
-                border-radius: 15px;
-                box-shadow: 0 9px #999;
-            }
-            .container .btn2 {
-                position: absolute;
-                top: 25%;
-                left: 65%;
-                display: inline-block;
-                padding: 15px 25px;
-                font-size: 120px;
-                cursor: pointer;
-                text-align: center;
-                text-decoration: none;
-                outline: none;
-                color: #fff;
-                background-color: #4CAF50;
-                border: none;
-                border-radius: 15px;
-                box-shadow: 0 9px #999;
-            }
-            .container .btn:hover {
-                background-color: black;
-                color: white;
-            }
-            .container .btn2:hover {
-                background-color: black;
-                color: white;
-            }
-        </style>
+            <!-- navigation -->
+            <div class="navbar">
+              <span class="nav-item">IG project</span>
+              <div class="dropdown">
+                <span class="nav-item">Cameras</span>
+                <div class="dropdown-content">
+                  <span class="nav-cam" id="3rd-cam">3rd person</span>
+                  <span class="nav-cam" id="1st-cam">1st person</span>
+                  <span class="nav-cam" id="top-cam">top view</span>
+                  <span class="nav-cam" id="free-cam">free view</span>
+                </div>
+              </div> 
+            </div>
+
+            <!-- three.js container -->
+            <div class="webgl-container" id="three-container"></div>
+
+            <!-- daytime menu container -->
+            <div class="start-container">
+                <img src="images/MainMenu.jpg" alt="Snow" style="width:100%">
+                <button onclick="startwN()" class="btn">Day</button>
+                <button onclick="startN()" class="btn2">Night</button>
+            </div>        
+
+            <!-- race interface -->
+            <div id="fast" class="hud" style="display: none;">
+                <span id="fast_value" class="value">
+                    0
+                </span> 
+                km/h
+            </div>
+
+            <div id="lap" class="hud" style="display: none;"><span id="lap_value" class="value">0</span></div>
+            <div id="dir" class="hud"><span id="dir_value" class="value"></span></div>
+        </div>
 
         <script src="js/jquery-1.7.2.min.js"></script>
         <script src="js/three.js"></script>
@@ -181,7 +117,7 @@
 
                 // CAMERA
                 var SCREEN_WIDTH = window.innerWidth, SCREEN_HEIGHT = window.innerHeight;
-                var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 0.1, FAR = 20000;
+                var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 1, FAR = 10000;
                 camera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
                 scene.add(camera);
                 camera.position.set(0, 3, -8);
@@ -193,16 +129,17 @@
                 else
                     renderer = new THREE.CanvasRenderer();
                 renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-                container = document.getElementById('container');
+                container = document.getElementById('three-container');
                 container.appendChild(renderer.domElement);
 
                 // STATS
+                /*
                 stats = new Stats();
                 stats.domElement.style.position = 'absolute';
                 stats.domElement.style.bottom = '0px';
                 stats.domElement.style.zIndex = 100;
                 container.appendChild(stats.domElement);
-
+                */
                 // var axes = new THREE.AxisHelper(100);
                 // scene.add(axes);
 
@@ -355,7 +292,7 @@
 
             function update() {
                 updateCarPosition();
-                stats.update();
+                // stats.update();
             }
 
 
