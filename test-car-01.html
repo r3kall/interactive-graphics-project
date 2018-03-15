@@ -35,10 +35,7 @@
 
             <!-- race interface -->
             <div id="fast" class="hud" style="display: none;">
-                <span id="fast_value" class="value">
-                    0
-                </span> 
-                km/h
+                <span id="fast_value" class="value">0</span> km/h
             </div>
 
             <div id="lap" class="hud" style="display: none;"><span id="lap_value" class="value">0</span></div>
@@ -49,6 +46,7 @@
         <script src="js/three.js"></script>
         <script src="js/stats.js"></script>
         <script src="js/Detector.js"></script>
+        <script src="js/OrbitControls.js"></script>
         <script src="js/threex.keyboardstate.js"></script>
         <script src="common.js"></script>
         <!-- ------------------------------------------------------------ -->
@@ -68,8 +66,8 @@
             // MAIN
 
             // standard global variables
-            var container, scene, camera, renderer, stats;
-            var keyboard = new THREEx.KeyboardState();
+            var container, scene, activeCamera, renderer, controls, stats;
+            var keyboard = new THREEx.KeyboardState();            
             var clock = THREE.Clock();
 
             // global variables
@@ -118,10 +116,10 @@
                 // CAMERA
                 var SCREEN_WIDTH = window.innerWidth, SCREEN_HEIGHT = window.innerHeight;
                 var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 1, FAR = 10000;
-                camera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
-                scene.add(camera);
-                camera.position.set(0, 3, -8);
-                camera.lookAt(new THREE.Vector3(0, 0, 0));
+                activeCamera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
+                scene.add(activeCamera);                
+                activeCamera.position.set(0, 2, -6);
+                activeCamera.lookAt(new THREE.Vector3(0, 0, 4));
 
                 // RENDERER
                 if (Detector.webgl)
@@ -131,6 +129,40 @@
                 renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
                 container = document.getElementById('three-container');
                 container.appendChild(renderer.domElement);
+
+                controls = new THREE.OrbitControls(activeCamera, renderer.domElement);
+                controls.enabled = false;
+
+                // CAMERA OPTIONS
+                $('.nav-cam').click(function() {
+                    switch(this.id) {
+                        case "3rd-cam":
+                            controls.enabled = false;
+                            activeCamera.position.set(0, 2, -6);
+                            activeCamera.lookAt(new THREE.Vector3(0, 0, 4));
+                            break;
+                        case "1st-cam":
+                            controls.enabled = false;
+                            activeCamera.position.set(0, 1, 0.4);
+                            activeCamera.lookAt(new THREE.Vector3(0, 0, 8));
+                            break;
+                        case "top-cam":
+                            controls.enabled = false;
+                            activeCamera.position.set(0, 50, -4);
+                            activeCamera.lookAt(new THREE.Vector3(0, 0, 10));
+                            break;
+                        case "free-cam":
+                            controls.enabled = true;
+                            activeCamera.position.set(0, 10, 0);
+                            controls.update();
+                            break;
+                        default:
+                            controls.enabled = false;
+                            activeCamera.position.set(0, 3, -8);
+                            activeCamera.lookAt(new THREE.Vector3(0, 0, 0));
+                            break;
+                    }
+                });
 
                 // STATS
                 /*
@@ -229,7 +261,6 @@
                 materialsArray.push(materialTop); // materialindex = 1
 
                 var aFaces = geometry.faces.length;
-                console.log(aFaces);
                 for (var i = 0; i < aFaces; i++) {
                     if (i < 64) {
                         geometry.faces[i].materialIndex = 0;
@@ -273,7 +304,7 @@
                     Car.add(cylinder)
                     Car.add(cylinder2);
                     scene.add(Car);
-                    Car.add(camera);
+                    Car.add(activeCamera);
                 });
 
                 // END INIT
@@ -283,6 +314,7 @@
             function animate() {
 
                 requestAnimationFrame(animate);
+                if (controls.enabled) controls.update();
                 render();
                 update();
 
@@ -345,11 +377,6 @@
                 // limit speed
                 speed = Util.limit(speed, 0, maxSpeed);
 
-                if (keyboard.pressed("Q"))
-                    Car.translateX(0.1);
-                if (keyboard.pressed("E"))
-                    Car.translateX(-0.1);
-
                 // rotate left/right/up/down
                 if (keyboard.pressed("A")) {
                     Car.rotateOnAxis(new THREE.Vector3(0, 1, 0), rotateAngle);
@@ -358,26 +385,6 @@
                 }
                 if (keyboard.pressed("D"))
                     Car.rotateOnAxis(new THREE.Vector3(0, 1, 0), -rotateAngle);
-
-                if (keyboard.pressed("Z")) {
-                    Car.position.set(0, -0.5, 0);
-                    Car.rotation.set(0, 0, 0);
-                }
-
-                if (keyboard.pressed("C")) {
-                    camera.position.set(10, 3, -8);
-                    camera.lookAt(new THREE.Vector3(0, 0, 0));
-                }
-
-                if (keyboard.pressed("I")) {
-                    camera.position.set(0, 3, -8);
-                    camera.lookAt(new THREE.Vector3(0, 0, 0));
-                }
-
-                if (keyboard.pressed("L")) {
-                    camera.position.set(0, 1, 0.4);
-                    camera.lookAt(new THREE.Vector3(0, 0, 8));
-                }
 
                 if (Collision.walls(Car, collidableMeshList)) {
                     speed = 0;
@@ -426,7 +433,7 @@
 
             function render() {
 
-                renderer.render(scene, camera);
+                renderer.render(scene, activeCamera);
 
                 // END RENDER FUNCTION
             }

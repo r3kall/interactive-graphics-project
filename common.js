@@ -16,7 +16,7 @@ var Util = {
     random:         function(min, max)          { return (Math.random() * (max - min) + min);   },
     randomInt:      function(min, max)          { return Math.round(Math.random() * (max - min + 1)) + min;},
 
-    beta:     function(min, max) {
+    beta:  function(min, max) {
         var u = Math.random();
         return (4*u*(1-u)) * (max - min) + min;        
     }
@@ -493,8 +493,9 @@ var Collision = {
 
         scene.add(tower);
         return tower;
-    }
+    },
  }
+
 
 var SETTINGS = {
     WORLD_POSITION  :   {x:         0, y:  -0.5, z: 0},
@@ -503,5 +504,4 @@ var SETTINGS = {
     TRACK_SCALE     :   {x:         2, y:     2, z: 2},
     LINE_POSITION   :   {x:       -30, y: -0.42, z: 10},
     WALLS_HEIGHT    :   5,
-
 }
