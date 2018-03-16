@@ -79,14 +79,13 @@ var Collision = {
         }
 
         var references = [];
-        for (var i=0; i<3; i++)
+        for (var i=0; i<2; i++)
             references.push(defBox());
 
         references[0].position.set(-48, SETTINGS.WORLD_POSITION['y'], 88);
-        references[1].position.set(512, SETTINGS.WORLD_POSITION['y'], 16);
-        references[2].position.set(232, SETTINGS.WORLD_POSITION['y'], -96);
+        references[1].position.set(232, SETTINGS.WORLD_POSITION['y'], -96);
 
-        for (var i=0; i<3; i++)
+        for (var i=0; i<2; i++)
             scene.add(references[i]);
 
         return references;
@@ -117,15 +116,17 @@ var Collision = {
     createFloor:  function(scene) {
         var floorTexture = new THREE.TextureLoader().load( 'images/grassmix.png' );
         floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping;
-        floorTexture.repeat.set( 128, 64 );
+        floorTexture.repeat.set( 128, 128 );
 
-        var floorMaterial = new THREE.MeshLambertMaterial( { map: floorTexture, side: THREE.BackSide } );
-        var floorGeometry = new THREE.PlaneGeometry(1024, 1024, 8, 8);
+        var floorMaterial = new THREE.MeshStandardMaterial( {map: floorTexture} );
+        var floorGeometry = new THREE.PlaneGeometry(1024, 1024, 32, 32);
         var floor = new THREE.Mesh(floorGeometry, floorMaterial);
 
         floor.position.set(SETTINGS.WORLD_POSITION['x'], SETTINGS.WORLD_POSITION['y'], SETTINGS.WORLD_POSITION['z']);
-        floor.rotation.set(SETTINGS.WORLD_ROTATION['x'], SETTINGS.WORLD_ROTATION['y'], SETTINGS.WORLD_ROTATION['z']);
-
+        floor.rotation.set(0, SETTINGS.WORLD_ROTATION['y'], SETTINGS.WORLD_ROTATION['z']);
+        floor.rotation.x -= SETTINGS.WORLD_ROTATION['x'];
+        floor.castShadow = false;
+        floor.receiveShadow = true;
         scene.add(floor);
     },
 
@@ -140,7 +141,7 @@ var Collision = {
         
         skyTexture.wrapS = skyTexture.wrapT = THREE.RepeatWrapping;
 
-        var skyMaterial = new THREE.MeshBasicMaterial({map: skyTexture, side: THREE.DoubleSide});
+        var skyMaterial = new THREE.MeshLambertMaterial({map: skyTexture, side: THREE.DoubleSide});
         var skyDome = new THREE.Mesh(skySphere, skyMaterial);
         scene.add(skyDome);
     },
@@ -150,7 +151,7 @@ var Collision = {
         var texture = new THREE.TextureLoader().load( 'images/wall3.jpg' );
         texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
         texture.repeat.set( 128, 4 );
-        var material = new THREE.MeshLambertMaterial( { map: texture, side: THREE.DoubleSide } );
+        var material = new THREE.MeshStandardMaterial( { map: texture, side: THREE.DoubleSide } );
 
         var wallAGeometry = new THREE.CubeGeometry( 560, SETTINGS.WALLS_HEIGHT, 1 );  
         wallA = new THREE.Mesh( wallAGeometry, material );
@@ -176,13 +177,12 @@ var Collision = {
         return group;
     },
 
-
     createIWalls:  function(scene) {
         var igroup = new THREE.Group();
         var texture = new THREE.TextureLoader().load( 'images/wall2.jpg' );
         texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
         texture.repeat.set( 1, 2 );
-        var material = new THREE.MeshLambertMaterial( { map: texture, side: THREE.DoubleSide } );
+        var material = new THREE.MeshStandardMaterial( { map: texture, side: THREE.DoubleSide } );
 
         var iwallAGeometry = new THREE.CubeGeometry(390, SETTINGS.WALLS_HEIGHT, 1);
         iwallN = new THREE.Mesh(iwallAGeometry, material);
@@ -251,11 +251,13 @@ var Collision = {
         btexture.needsUpdate = true;
 
         // build the mesh
-        var bmaterial = new THREE.MeshLambertMaterial({
+        var bmaterial = new THREE.MeshStandardMaterial({
             map: btexture,
             vertexColors: THREE.VertexColors
         });
         cityMesh = new THREE.Mesh(cityGeometry, bmaterial);
+        cityMesh.castShadow = true;
+        cityMesh.receiveShadow = true;
 
         function generateTexture() {
             // build a small canvas 32x64 and paint it in white
@@ -346,11 +348,12 @@ var Collision = {
         texture.repeat.set( 64, 64 );
 
         var geometry = new THREE.ShapeBufferGeometry( trackShape );
-        var mesh = new THREE.Mesh( geometry, new THREE.MeshPhongMaterial( { map: texture, side: THREE.DoubleSide} ) );
+        var mesh = new THREE.Mesh( geometry, new THREE.MeshStandardMaterial( { map: texture, side: THREE.DoubleSide} ) );
 
         mesh.position.set(SETTINGS.TRACK_POSITION['x'], SETTINGS.TRACK_POSITION['y'], SETTINGS.TRACK_POSITION['z']);
         mesh.rotation.set(SETTINGS.WORLD_ROTATION['x'], SETTINGS.WORLD_ROTATION['y'], SETTINGS.WORLD_ROTATION['z']);
         mesh.scale.set(SETTINGS.TRACK_SCALE['x'], SETTINGS.TRACK_SCALE['y'], SETTINGS.TRACK_SCALE['z']);
+        mesh.receiveShadow = true;
         scene.add(mesh);
         return mesh;
     },
@@ -360,7 +363,7 @@ var Collision = {
         lineTexture.wrapS = lineTexture.wrapT = THREE.RepeatWrapping;
         lineTexture.repeat.set( 8, 1 );
 
-        var lineMaterial = new THREE.MeshLambertMaterial( { map: lineTexture, side: THREE.BackSide} );
+        var lineMaterial = new THREE.MeshStandardMaterial( { map: lineTexture, side: THREE.BackSide} );
         //var lineGeometry = new THREE.PlaneGeometry(20, 2);
         var lineGeometry = new THREE.BoxGeometry(20, 2, 0.000001);
         var line = new THREE.Mesh(lineGeometry, lineMaterial);
@@ -376,44 +379,55 @@ var Collision = {
         function createTree(x, y, z) {
             geometry = new THREE.BoxGeometry( 1, 1, 1 );
 
-            var leaveDarkMaterial = new THREE.MeshLambertMaterial( { color: 0x91E56E } );
-            var leaveLightMaterial = new THREE.MeshLambertMaterial( { color: 0xA2FF7A } );
-            var leaveDarkDarkMaterial = new THREE.MeshLambertMaterial( { color: 0x71B356 } );
-            var stemMaterial = new THREE.MeshLambertMaterial( { color: 0x7D5A4F } );
+            var leaveDarkMaterial = new THREE.MeshStandardMaterial( { color: 0x91E56E } );
+            var leaveLightMaterial = new THREE.MeshStandardMaterial( { color: 0xA2FF7A } );
+            var leaveDarkDarkMaterial = new THREE.MeshStandardMaterial( { color: 0x71B356 } );
+            var stemMaterial = new THREE.MeshStandardMaterial( { color: 0x7D5A4F } );
 
             var stem = new THREE.Mesh( geometry, stemMaterial );
             stem.position.set( 0, 0, 0 );
             stem.scale.set( 0.3, 1.5, 0.3 );
+            stem.receiveShadow = true;
+            stem.castShadow = true;
 
             var squareLeave01 = new THREE.Mesh( geometry, leaveDarkMaterial );
             squareLeave01.position.set( 0.5, 1.6, 0.5 );
             squareLeave01.scale.set( 0.8, 0.8, 0.8 );
+            squareLeave01.receiveShadow = true;
+            squareLeave01.castShadow = true;
 
             var squareLeave02 = new THREE.Mesh( geometry, leaveDarkMaterial );
             squareLeave02.position.set( -0.4, 1.3, -0.4 );
             squareLeave02.scale.set( 0.7, 0.7, 0.7 );
+            squareLeave02.receiveShadow = true;
+            squareLeave02.castShadow = true;
 
             var squareLeave03 = new THREE.Mesh( geometry, leaveDarkMaterial );
             squareLeave03.position.set( 0.4, 1.7, -0.5 );
             squareLeave03.scale.set( 0.7, 0.7, 0.7 );
+            squareLeave03.receiveShadow = true;
+            squareLeave03.castShadow = true;
 
             var leaveDark = new THREE.Mesh( geometry, leaveDarkMaterial );
             leaveDark.position.set( 0, 1.2, 0 );
             leaveDark.scale.set( 1, 2, 1 );
+            leaveDark.receiveShadow = true;
+            leaveDark.castShadow = true;
 
             var leaveLight = new THREE.Mesh( geometry, leaveLightMaterial );
             leaveLight.position.set( 0, 1.2, 0 );
             leaveLight.scale.set( 1.1, 0.5, 1.1 );
+            leaveLight.receiveShadow = true;
+            leaveLight.castShadow = true;
 
-            tree = new THREE.Group();
+            tree = new THREE.Object3D();
             tree.add( leaveDark );
             tree.add( leaveLight );
             tree.add( squareLeave01 );
             tree.add( squareLeave02 );
             tree.add( squareLeave03 );
             tree.add( stem );
-            tree.position.set(x, y, z);
-
+            tree.position.set(x, y, z);            
             return tree;
         }
 
@@ -486,11 +500,11 @@ var Collision = {
         texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
         texture.repeat.set( 8, 8 );
 
-        var material = new THREE.MeshLambertMaterial( { map: texture } );
-        var geometry = new THREE.CylinderGeometry(8, 8, 16, 8, 8);
+        var material = new THREE.MeshStandardMaterial( { map: texture } );
+        var geometry = new THREE.CylinderGeometry(8, 8, 32, 8, 8);
         var tower = new THREE.Mesh(geometry, material);
         tower.position.set(160, SETTINGS.WORLD_POSITION['y'], 140);
-
+        tower.castShadow = true;
         scene.add(tower);
         return tower;
     },

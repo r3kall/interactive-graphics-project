@@ -1,5 +1,5 @@
 .main {
-    position: fixed;
+    position: absolute;
     top: 0;
     bottom: 0;
     left: 0;
@@ -26,6 +26,7 @@
 }
 
 .webgl-container {
+    position: relative;
     width: 100%;
     height: auto;
     margin: auto;
@@ -70,7 +71,7 @@
     font-family: Stencil;
 }
 
-/* menu interface */
+/* time interface */
 .start-container {
     position: relative;
     height: 100%;

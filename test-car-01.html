@@ -6,9 +6,8 @@
 		<title>Interactive Graphics Project - Racing Game</title>
 		<link href="styles.css" rel="stylesheet" type="text/css" />
 	</head>
-    <body>
-        <div class="main">
-
+    <body>        
+        <div class="main" id="main">
             <!-- navigation -->
             <div class="navbar">
               <span class="nav-item">IG project</span>
@@ -23,30 +22,26 @@
               </div> 
             </div>
 
+            <div id = "moveGUI" style="position: absolute; top: 0em; right: 16em;"></div>  
+
             <!-- three.js container -->
             <div class="webgl-container" id="three-container"></div>
 
-            <!-- daytime menu container -->
-            <div class="start-container">
-                <img src="images/MainMenu.jpg" alt="Snow" style="width:100%">
-                <button onclick="startwN()" class="btn">Day</button>
-                <button onclick="startN()" class="btn2">Night</button>
-            </div>        
-
             <!-- race interface -->
-            <div id="fast" class="hud" style="display: none;">
+            <div id="fast" class="hud">
                 <span id="fast_value" class="value">0</span> km/h
             </div>
 
-            <div id="lap" class="hud" style="display: none;"><span id="lap_value" class="value">0</span></div>
+            <div id="lap" class="hud"><span id="lap_value" class="value">0</span></div>
             <div id="dir" class="hud"><span id="dir_value" class="value"></span></div>
-        </div>
+        </div>        
 
         <script src="js/jquery-1.7.2.min.js"></script>
         <script src="js/three.js"></script>
         <script src="js/stats.js"></script>
         <script src="js/Detector.js"></script>
         <script src="js/OrbitControls.js"></script>
+        <script src="js/dat.gui.js"></script>
         <script src="js/threex.keyboardstate.js"></script>
         <script src="common.js"></script>
         <!-- ------------------------------------------------------------ -->
@@ -56,13 +51,7 @@
                 Author: Lorenzo Rutigliano, Mattia Rubeca.
                 Date: September 2017 (three.js v87).
             */
-            $("button").live("click", function () {
-                var x = document.getElementById("fast");
-                var y = document.getElementById("lap");
-                x.style.display = "block";
-                y.style.display = "block";
-                $(this).parent().remove();
-            });
+
             // MAIN
 
             // standard global variables
@@ -78,6 +67,7 @@
             var onLapReferences = [];
             var onLapFlags = [];
             var lineLap, numLap;
+            var gui;
 
             // car variables
             var speed = 0; 			  // current speed
@@ -95,28 +85,22 @@
             var canvas;
 
             var night = false;
+            var lights = [];
 
-            function startwN() {
-                init();
-                animate();
-            }
+            init();
+            animate();
 
-            function startN() {
-                night = true;
-                init();
-                animate();
-            }
-
-            // FUNCTIONS
             function init() {
 
                 // SCENE
                 scene = new THREE.Scene();
 
                 // CAMERA
-                var SCREEN_WIDTH = window.innerWidth, SCREEN_HEIGHT = window.innerHeight;
+                var SCREEN_WIDTH = window.innerWidth; 
+                var SCREEN_HEIGHT = window.innerHeight;
                 var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 1, FAR = 10000;
                 activeCamera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
+                activeCamera.updateProjectionMatrix();
                 scene.add(activeCamera);                
                 activeCamera.position.set(0, 2, -6);
                 activeCamera.lookAt(new THREE.Vector3(0, 0, 4));
@@ -126,8 +110,13 @@
                     renderer = new THREE.WebGLRenderer({ antialias: true });
                 else
                     renderer = new THREE.CanvasRenderer();
+
                 renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-                container = document.getElementById('three-container');
+                renderer.shadowMap.enabled = true;
+                renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+                container = document.getElementById('main');
+                renderer.setSize($(container).width(), $(container).height());
                 container.appendChild(renderer.domElement);
 
                 controls = new THREE.OrbitControls(activeCamera, renderer.domElement);
@@ -164,6 +153,8 @@
                     }
                 });
 
+                initGUI();
+
                 // STATS
                 /*
                 stats = new Stats();
@@ -197,58 +188,10 @@
                 Environment.createTrees(scene);
                 onLapReferences = Collision.referenceLap(scene);
                 for (var i = 0; i < onLapReferences.length; i++)
-                    onLapFlags.push(false);                
+                    onLapFlags.push(false);
 
-                // LIGHT
-                if (night == false) {
-                    var hemiLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 0.5 );
-                    hemiLight.position.set( 0, 500, 0 );
-                    scene.add( hemiLight );
-
-                    var dirLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
-                    dirLight.position.set( -1, 1.25, 1 );
-                    dirLight.position.multiplyScalar( 50 );
-                    scene.add( dirLight );
-                } else {
-                    // LAMP NIGHT
-                    var spotLight = new THREE.SpotLight(0xffffff);
-                    spotLight.position.set(-47, 80, -85);
-                    spotLight.angle = Math.PI / 5;
-                    spotLight.castShadow = true;
-                    spotLight.distance = 1000;
-                    scene.add(spotLight);
-
-                    var spotLight2 = spotLight.clone();
-                    spotLight2.angle = Math.PI / 2;
-                    spotLight2.position.set(512, 40, 0);
-                    scene.add(spotLight2);
-
-                    var spotLight3 = spotLight.clone();
-                    spotLight3.angle = Math.PI / 5;
-                    spotLight3.position.set(512, 40, 272);
-                    scene.add(spotLight3);
-
-                    var spotLight4 = spotLight.clone();
-                    spotLight4.angle = Math.PI / 2;
-                    spotLight4.position.set(76, 40, 80);
-                    scene.add(spotLight4);
-
-                    var spotLight5 = spotLight.clone();
-                    spotLight5.angle = Math.PI;
-                    spotLight5.position.set(-47, 40, 270);
-                    scene.add(spotLight5);
-
-                    //LAMP utilizzata per posizionare la luce
-                    var sphereGeometry = new THREE.SphereGeometry(0.7, 16, 8);
-                    var darkMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
-                    var wireframeMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00, wireframe: true, transparent: true });
-                    var shape = THREE.SceneUtils.createMultiMaterialObject(sphereGeometry, [darkMaterial, wireframeMaterial]);
-                    //shape.position.set(-46, 30, 50);
-                    shape.position.set(-47, 0, -85);
-                    //scene.add(shape);
-                    lightHelper = new THREE.SpotLightHelper(spotLight5);
-                    //scene.add(lightHelper);
-                }
+                // LIGHTS                
+                initLights();
 
                 var geometry = new THREE.CylinderGeometry(0.3, 0.3, 0.3, 32, 1, false);
                 var rimTex = new THREE.TextureLoader().load("images/rim.jpg");
@@ -289,7 +232,7 @@
                     texture.image = image;
                     texture.needsUpdate = true;
                 });
-                var material = new THREE.MeshBasicMaterial({ map: texture });
+                var material = new THREE.MeshStandardMaterial({ map: texture, metalness: 0.5, color: 0xffffff});
 
                 // CAR MODEL
                 var objectLoader = new THREE.JSONLoader();
@@ -303,11 +246,122 @@
                     Car = carMesh;
                     Car.add(cylinder)
                     Car.add(cylinder2);
+                    Car.castShadow = true;
                     scene.add(Car);
                     Car.add(activeCamera);
                 });
 
                 // END INIT
+            }
+
+            function initLights() {
+                var hemiLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 0.5 );
+                scene.add(hemiLight);          
+            
+                var light = new THREE.PointLight( 0xffffff, 1);
+                light.position.set( -32, 128, 64 );
+                light.castShadow = true;
+                light.shadow.camera.near = 96;       
+                light.shadow.camera.far = 512;
+                light.shadow.mapSize.width = 2048;
+                light.shadow.mapSize.height = 2048;
+                scene.add(light);
+                lights.push(light);
+            
+                // LAMP NIGHT
+                var spotLight = new THREE.SpotLight(0xffffff, 0.5);
+                spotLight.position.set(-47, 80, -85);
+                spotLight.angle = Math.PI / 5;
+                spotLight.castShadow = true;
+                spotLight.distance = 512;
+                spotLight.penumbra = 0.5;
+                spotLight.decay = 1;
+                spotLight.shadow.camera.near = 60;       
+                spotLight.shadow.camera.far = 256;
+                spotLight.shadow.mapSize.width = 1024;
+                spotLight.shadow.mapSize.height = 1024;
+                spotLight.visible = false;
+                scene.add(spotLight);
+                lights.push(spotLight);
+                
+                var spotLight2 = spotLight.clone();
+                spotLight2.angle = Math.PI / 2;
+                spotLight2.position.set(512, 80, 0);
+                spotLight2.castShadow = true;
+                spotLight2.visible = false;
+                scene.add(spotLight2);
+                lights.push(spotLight2);
+                
+                var spotLight3 = spotLight.clone();
+                spotLight3.angle = Math.PI / 5;
+                spotLight3.position.set(512, 80, 272);
+                spotLight3.castShadow = true;
+                spotLight3.visible = false;
+                scene.add(spotLight3);
+                lights.push(spotLight3);
+                /*
+                var spotLight4 = spotLight.clone();
+                spotLight4.angle = Math.PI / 2;
+                spotLight4.position.set(76, 80, 80);
+                scene.add(spotLight4);
+
+                var spotLight5 = spotLight.clone();
+                spotLight5.angle = Math.PI;
+                spotLight5.position.set(-47, 80, 270);
+                scene.add(spotLight5);
+                */
+                // var lightHelper = new THREE.SpotLightHelper(spotLight);
+                // scene.add(lightHelper);
+
+                // END INIT LIGHTS
+            }
+
+            function initGUI() {
+                var props = { shadows: true,
+                              carColor: '#FFFFFF' };
+
+                gui = new dat.GUI({ autoPlace: false });
+
+                props.switchTime = 
+                    function() {
+                        night = !night;
+                        for(var i=0; i<lights.length; i++) {
+                            if (lights[i].type == 'SpotLight') {
+                                if (night) lights[i].visible = true;
+                                else lights[i].visible = false;
+                            } else {
+                                if (night) lights[i].visible = false;
+                                else lights[i].visible = true;
+                            } 
+                        }
+                    };
+
+                gui.add(props, 'switchTime')
+                   .name('Day/Night');
+
+                shadowController = gui.add(props, 'shadows')
+                                      .name('Shadows')
+                                      .listen();
+                shadowController.onChange(
+                    function(newValue) {
+                        for(var i=0; i<lights.length; i++)
+                            lights[i].castShadow = newValue;
+                    });
+
+                barColorCtrl = gui.addColor(props,'carColor')
+                                  .name('Car Color')
+                                  .listen();
+
+                barColorCtrl.onChange(
+                    function(newColor) {
+                        newColor = newColor.replace( '#','0x' );
+                        Car.material.color.setHex(newColor);
+                    });
+
+                gui.domElement.id = 'main';
+                var customContainer = $('#moveGUI').append($(gui.domElement));
+
+                // END INIT GUI
             }
 
 
@@ -404,6 +458,7 @@
                 // END FUNCTION
             }
 
+
             function updateSpeed(value) {
                 // accessing DOM can be slow, so only do it if value has changed
                 if (fast.value !== value) {
@@ -414,6 +469,7 @@
                 // END FUNCTION
             }
 
+
             function checkLapFlags(flags) {
                 for (var i = 0; i < flags.length; i++) {
                     if (!flags[i]) return false;
@@ -423,6 +479,7 @@
                 // END FUNCTION
             }
 
+
             function resetLapFlags(flags) {
                 for (var i = 0; i < flags.length; i++) {
                     flags[i] = false;
@@ -431,12 +488,14 @@
                 // END FUNCTION
             }
 
-            function render() {
 
+            function render() {
                 renderer.render(scene, activeCamera);
 
                 // END RENDER FUNCTION
             }
+
+
 
         </script>
     </body>
