@@ -118,7 +118,7 @@ var Collision = {
         floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping;
         floorTexture.repeat.set( 128, 128 );
 
-        var floorMaterial = new THREE.MeshStandardMaterial( {map: floorTexture} );
+        var floorMaterial = new THREE.MeshStandardMaterial( {map: floorTexture, metalness: 0.3} );
         var floorGeometry = new THREE.PlaneGeometry(1024, 1024, 32, 32);
         var floor = new THREE.Mesh(floorGeometry, floorMaterial);
 
@@ -130,16 +130,12 @@ var Collision = {
         scene.add(floor);
     },
 
-    createSky:  function(scene) {
-
-        var skySphere = new THREE.SphereGeometry(2048, 128, 128);
-        var skyTexture = new THREE.TextureLoader().load("images/Sky.jpg");        
-        skyTexture.wrapS = skyTexture.wrapT = THREE.RepeatWrapping;
-
-        var skyMaterial = new THREE.MeshLambertMaterial({map: skyTexture, side: THREE.DoubleSide});
-        skyMaterial.color.setHex(0x87CEEB);
+    createSky:  function(scene, texture) {
+        var skySphere = new THREE.SphereGeometry(1024, 128, 128);
+        var skyMaterial = new THREE.MeshLambertMaterial({map: texture, side: THREE.DoubleSide});
         var skyDome = new THREE.Mesh(skySphere, skyMaterial);
         scene.add(skyDome);
+        return skyDome;
     },
 
     createWalls:  function(scene) {
@@ -337,7 +333,7 @@ var Collision = {
         texture.repeat.set( 64, 64 );
 
         var geometry = new THREE.ShapeBufferGeometry( trackShape );
-        var mesh = new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({ map: texture, side: THREE.DoubleSide }));
+        var mesh = new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({ map: texture, side: THREE.DoubleSide, metalness: 0.3 }));
 
         mesh.position.set(SETTINGS.TRACK_POSITION['x'], SETTINGS.TRACK_POSITION['y'], SETTINGS.TRACK_POSITION['z']);
         mesh.rotation.set(SETTINGS.WORLD_ROTATION['x'], SETTINGS.WORLD_ROTATION['y'], SETTINGS.WORLD_ROTATION['z']);

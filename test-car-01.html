@@ -82,15 +82,15 @@
             var clock = THREE.Clock();
 
             // global variables
-            var Car, Track;
+            var Car, Track, Sky, Day, Night;
             var WheelFL, WheelBL;
             var collidableMeshList = [];
             var onDirectionReferences = [];
             var onLapReferences = [];
             var onLapFlags = [];
+            var lights = [];
             var lineLap, numLap;
             var gui;
-			var RuotaMulino;
 
             // car variables
             var speed = 0; 			  // current speed
@@ -101,15 +101,11 @@
             var offRoadDecel = -maxSpeed / 9;   // off road deceleration
             var offRoadLimit = maxSpeed / 4;   // off road top speed (deceleration no longer applies)
 
-            var fast = { value: null, dom: document.getElementById('fast_value') }
-            var lap  = { value: 0, dom: document.getElementById('lap_value') }
-            var dir  = { value: true, dom: document.getElementById('dir_value') }
-
-            var canvas;
-
+            var fast = {value:null, dom:document.getElementById('fast_value')};
+            var lap  = {value:0,    dom:document.getElementById('lap_value')};
+            var dir  = {value:true, dom:document.getElementById('dir_value')};
             var night = false;
-            var lights = [];
-
+ 
             init();
             animate();
 
@@ -190,8 +186,14 @@
                 // scene.add(axes);
 
                 // ENVIRONMENT
+
+                Day = new THREE.TextureLoader().load("images/Sky.jpg");
+                Night = new THREE.TextureLoader().load("images/night.png");
+                //Day.anisotropy = renderer.getMaxAnisotropy();
+                //Night.anisotropy = renderer.getMaxAnisotropy();
+
                 Environment.createFloor(scene);  // create floor
-                Environment.createSky(scene);    // create skybox
+                Sky = Environment.createSky(scene, Day);  // create skybox
 
                 Track = Environment.createTrack(scene);  // create and get the Race Track
                 lineLap = Environment.createLine(scene);  // create start/finish line
@@ -273,6 +275,11 @@
                     Car.castShadow = true;
                     scene.add(Car);
                     Car.add(activeCamera);
+
+                    // set spotlights target
+                    for (var i=0; i<lights.length; i++)
+                        if (lights[i].type == 'SpotLight')
+                            lights[i].target = Car;
                 });				
 
                 // END INIT
@@ -291,49 +298,32 @@
                 light.shadow.mapSize.height = 2048;
                 scene.add(light);
                 lights.push(light);
-            
-                // LAMP NIGHT
-                var spotLight = new THREE.SpotLight(0xffffff, 0.5);
-                spotLight.position.set(-47, 80, -85);
-                spotLight.angle = Math.PI / 5;
-                spotLight.castShadow = false;
-                spotLight.distance = 512;
-                spotLight.penumbra = 0.5;
-                spotLight.decay = 1;
-                spotLight.shadow.camera.near = 60;       
-                spotLight.shadow.camera.far = 256;
-                spotLight.shadow.mapSize.width = 1024;
-                spotLight.shadow.mapSize.height = 1024;
-                spotLight.visible = false;
-                scene.add(spotLight);
-                lights.push(spotLight);
-                
-                var spotLight2 = spotLight.clone();
-                spotLight2.angle = Math.PI / 2;
-                spotLight2.position.set(512, 80, 0);
-                spotLight2.castShadow = false;
-                spotLight2.visible = false;
-                scene.add(spotLight2);
-                lights.push(spotLight2);
-                
-                var spotLight3 = spotLight.clone();
-                spotLight3.angle = Math.PI / 5;
-                spotLight3.position.set(512, 80, 272);
-                spotLight3.castShadow = false;
-                spotLight3.visible = false;
-                scene.add(spotLight3);
-                lights.push(spotLight3);
-                /*
-                var spotLight4 = spotLight.clone();
-                spotLight4.angle = Math.PI / 2;
-                spotLight4.position.set(76, 80, 80);
-                scene.add(spotLight4);
 
-                var spotLight5 = spotLight.clone();
-                spotLight5.angle = Math.PI;
-                spotLight5.position.set(-47, 80, 270);
-                scene.add(spotLight5);
-                */
+                function genSpotLight(x, y, z) {
+                    var spotLight = new THREE.SpotLight(0xFFFFE0, 0.3);
+                    spotLight.position.set(x, y, z);
+                    spotLight.angle = Math.PI / 4;
+                    spotLight.castShadow = false;
+                    spotLight.distance = 1024;
+                    spotLight.penumbra = 0.25;
+                    spotLight.decay = 1;
+                    spotLight.shadow.camera.near = 96;       
+                    spotLight.shadow.camera.far = 512;
+                    spotLight.shadow.mapSize.width = 2048;
+                    spotLight.shadow.mapSize.height = 2048;
+                    spotLight.visible = false;
+                    scene.add(spotLight);
+                    lights.push(spotLight);
+                    return spotLight;
+                }
+
+                var y = 128;
+                genSpotLight(-47, y, -85);
+                genSpotLight(512, y, 0);
+                genSpotLight(512, y, 272);
+                genSpotLight(76, y, 80);
+                genSpotLight(-47, y, 270);
+                
                 // var lightHelper = new THREE.SpotLightHelper(spotLight);
                 // scene.add(lightHelper);
 
@@ -358,6 +348,9 @@
                                 else lights[i].visible = true;
                             } 
                         }
+                        if (!night) Sky.material.map = Day;
+                        else Sky.material.map = Night;
+                        Sky.material.map.needsUpdate = true;
                     };
 
                 gui.add(props, 'switchTime')
