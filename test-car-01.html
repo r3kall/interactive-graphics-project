@@ -68,6 +68,7 @@
             var onLapFlags = [];
             var lineLap, numLap;
             var gui;
+			var RuotaMulino;
 
             // car variables
             var speed = 0; 			  // current speed
@@ -215,11 +216,11 @@
                 }
 
                 var cylinder = new THREE.Mesh(geometry, materialsArray);
-                cylinder.position.set(0.58, 0.3, 1.1);
+                cylinder.position.set(0.58, 0.3, 1.2);
                 cylinder.rotation.z = Math.PI / 2;
 
                 var cylinder2 = cylinder.clone();
-                cylinder2.position.set(0.58, 0.3, -0.8);
+                cylinder2.position.set(0.565, 0.3, -0.85);
                
                 WheelFL = cylinder;
                 WheelBL = cylinder2;
@@ -250,6 +251,42 @@
                     scene.add(Car);
                     Car.add(activeCamera);
                 });
+
+				//Pala Mulino
+				var cBladeGeometry = new THREE.CylinderGeometry(1, 1, 1, 32, 1);
+				var cBladeMaterial = new THREE.MeshBasicMaterial( {color: 0x00000} );
+				var cBlade = new THREE.Mesh( cBladeGeometry, cBladeMaterial );
+				cBlade.rotation.z = Math.PI / 2;
+				cBlade.rotation.y = Math.PI / 2;
+				cBlade.position.set(160, 10, 148);
+
+				var bladeGeometry = new THREE.CubeGeometry(1, 7, 0.1);
+				var bladeMaterial = new THREE.MeshBasicMaterial( {color: 0x00000} );
+				var Blade = new THREE.Mesh( bladeGeometry, bladeMaterial );
+				Blade.position.set(4, 0, 0);
+				Blade.rotation.x = Math.PI/2;
+				Blade.rotation.z = Math.PI/2;
+        
+				var Blade2 = Blade.clone();
+				Blade2.position.set(0, 0, 4);
+				Blade2.rotation.z = Math.PI;
+
+				var Blade3 = Blade.clone();
+				Blade3.position.set(-4, 0, 0);
+				Blade3.rotation.x = Math.PI/2;
+				Blade3.rotation.z = Math.PI/2;
+
+				var Blade4 = Blade.clone();
+				Blade4.position.set(0, 0, -4);
+				Blade4.rotation.z = Math.PI;
+
+				RuotaMulino = cBlade;
+				RuotaMulino.add(Blade);
+				RuotaMulino.add(Blade2);
+				RuotaMulino.add(Blade3);
+				RuotaMulino.add(Blade4);
+
+				scene.add( RuotaMulino );
 
                 // END INIT
             }
@@ -371,6 +408,7 @@
                 if (controls.enabled) controls.update();
                 render();
                 update();
+				RuotaMulino.rotateOnAxis(new THREE.Vector3(0, 1, 0), 0.04);
 
                 // END ANIMATE FUNCTION
             }

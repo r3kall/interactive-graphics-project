@@ -217,7 +217,7 @@ var Collision = {
 
     createCity:  function(scene) {
 
-        var building = new THREE.CubeGeometry(9, 20, 9);
+        var building = new THREE.CubeGeometry(9, 25, 9);
         building.applyMatrix(new THREE.Matrix4().makeTranslation(0, 0.5, 0));
         var buildingMesh = new THREE.Mesh(building);
 
@@ -300,7 +300,7 @@ var Collision = {
         for (var z = -30; z < 71; z += 25) {
             for (var x = 40; x < 401; x += 36) {
                 var cityMesh2 = cityMesh.clone();
-                cityMesh2.position.set(x, 0, z);
+                cityMesh2.position.set(x, 8, z);
                 city.add(cityMesh2);
             }
         }
@@ -308,7 +308,7 @@ var Collision = {
         for (var z = 90; z < 211; z += 20) {
             for (var x = 40; x < 71; x += 15) {
                 var cityMesh2 = cityMesh.clone();
-                cityMesh2.position.set(x, 0, z);
+                cityMesh2.position.set(x, 8, z);
                 city.add(cityMesh2);
             }
         }
@@ -501,9 +501,9 @@ var Collision = {
         texture.repeat.set( 8, 8 );
 
         var material = new THREE.MeshStandardMaterial( { map: texture } );
-        var geometry = new THREE.CylinderGeometry(8, 8, 32, 8, 8);
+        var geometry = new THREE.CylinderGeometry(8, 8, 16, 8, 8);
         var tower = new THREE.Mesh(geometry, material);
-        tower.position.set(160, SETTINGS.WORLD_POSITION['y'], 140);
+        tower.position.set(160, 7, 140);
         tower.castShadow = true;
         scene.add(tower);
         return tower;
