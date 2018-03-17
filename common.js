@@ -216,15 +216,7 @@ var Collision = {
     },
 
     createCity:  function(scene) {
-        var btexture = new THREE.Texture(generateTexture());
-        btexture.anisotropy = renderer.capabilities.getMaxAnisotropy();
-        btexture.needsUpdate = true;
-
-        // build the mesh
-        var bmaterial = new THREE.MeshStandardMaterial({
-            map: btexture,
-            vertexColors: THREE.VertexColors
-        });
+        
 
         function generateTexture() {
             // build a small canvas 32x64 and paint it in white
@@ -233,7 +225,7 @@ var Collision = {
             canvas.height = 64;
             var context = canvas.getContext('2d');
             // plain it in white
-            context.fillStyle = '#A3A3A3';
+            context.fillStyle = '#FFFFFF';
             context.fillRect(0, 0, 32, 64);
             // draw the window rows - with a small noise to simulate light variations in each room
             for (var y = 2; y < 64; y += 2) {
@@ -258,18 +250,43 @@ var Collision = {
             context.drawImage(canvas, 0, 0, canvas2.width, canvas2.height);
             // return the just built canvas2
             return canvas2;
-        }
+        };
+
+        function LightenColor(color, percent) {
+            var num = parseInt(color,16),
+                amt = Math.round(2.55 * percent),
+                R = (num >> 16) + amt,
+                B = (num >> 8 & 0x00FF) + amt,
+                G = (num & 0x0000FF) + amt;
+
+            return (0x1000000 + (R<255?R<1?0:R:255)*0x10000 + (B<255?B<1?0:B:255)*0x100 + (G<255?G<1?0:G:255));
+        };
+
+        function generateMaterial() {
+            var btexture = new THREE.Texture(generateTexture());
+            btexture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+            btexture.needsUpdate = true;
+
+            // build the mesh
+            var bmaterial = new THREE.MeshStandardMaterial({
+                map: btexture,
+                vertexColors: THREE.VertexColors,
+                color: LightenColor("586b89", Util.randomInt(1, 100))
+            });
+
+            return bmaterial;
+        };
 
         // CREATE MULTIPLE BUILDINGS
         var city = new THREE.Group();
-        var h = 12;
+        var h = 10;
         var rnd;
 
         for (var z = -30; z < 71; z += 25) {
             for (var x = 40; x < 401; x += 36) {
-                rnd = Util.randomInt(1, 4);
+                rnd = Util.randomInt(1, 3);
                 var g = new THREE.CubeGeometry(9, h*rnd, 9);
-                var cityMesh = new THREE.Mesh(g, bmaterial);
+                var cityMesh = new THREE.Mesh(g, generateMaterial());
                 cityMesh.position.set(x, (h*rnd/2), z);
                 cityMesh.castShadow = true;
                 cityMesh.receiveShadow = true;                    
@@ -281,7 +298,7 @@ var Collision = {
             for (var x = 40; x < 71; x += 15) {
                 rnd = Util.randomInt(1, 4);
                 var g = new THREE.CubeGeometry(9, h*rnd, 9);
-                var cityMesh = new THREE.Mesh(g, bmaterial);
+                var cityMesh = new THREE.Mesh(g, generateMaterial());                
                 cityMesh.position.set(x, (h*rnd/2), z);
                 cityMesh.castShadow = true;
                 cityMesh.receiveShadow = true;                         
@@ -480,10 +497,48 @@ var Collision = {
         var geometry = new THREE.CylinderGeometry(8, 8, 16, 8, 8);
         var tower = new THREE.Mesh(geometry, material);
         tower.position.set(160, 7, 140);
+        tower.receiveShadow = true;
         tower.castShadow = true;
         scene.add(tower);
         return tower;
     },
+
+    createMill:  function(scene) {        
+        var cBladeGeometry = new THREE.CylinderGeometry(1, 1, 1, 32, 1);
+        var cBladeMaterial = new THREE.MeshBasicMaterial( {color: 0x00000} );
+        var cBlade = new THREE.Mesh( cBladeGeometry, cBladeMaterial );
+        cBlade.rotation.z = Math.PI / 2;
+        cBlade.rotation.y = Math.PI / 2;
+        cBlade.position.set(160, 10, 148);
+
+        var bladeGeometry = new THREE.CubeGeometry(1, 7, 0.1);
+        var bladeMaterial = new THREE.MeshBasicMaterial( {color: 0x00000} );
+        var Blade = new THREE.Mesh( bladeGeometry, bladeMaterial );
+        Blade.position.set(4, 0, 0);
+        Blade.rotation.x = Math.PI/2;
+        Blade.rotation.z = Math.PI/2;
+
+        var Blade2 = Blade.clone();
+        Blade2.position.set(0, 0, 4);
+        Blade2.rotation.z = Math.PI;
+
+        var Blade3 = Blade.clone();
+        Blade3.position.set(-4, 0, 0);
+        Blade3.rotation.x = Math.PI/2;
+        Blade3.rotation.z = Math.PI/2;
+
+        var Blade4 = Blade.clone();
+        Blade4.position.set(0, 0, -4);
+        Blade4.rotation.z = Math.PI;
+
+        RuotaMulino = cBlade;
+        RuotaMulino.add(Blade);
+        RuotaMulino.add(Blade2);
+        RuotaMulino.add(Blade3);
+        RuotaMulino.add(Blade4);
+
+        scene.add( RuotaMulino );
+    }
  }
 
 
