@@ -297,7 +297,7 @@
             
                 var light = new THREE.PointLight( 0xffffff, 1);
                 light.position.set( -32, 128, 64 );
-                light.castShadow = true;
+                light.castShadow = false;
                 light.shadow.camera.near = 96;       
                 light.shadow.camera.far = 512;
                 light.shadow.mapSize.width = 2048;
@@ -309,7 +309,7 @@
                 var spotLight = new THREE.SpotLight(0xffffff, 0.5);
                 spotLight.position.set(-47, 80, -85);
                 spotLight.angle = Math.PI / 5;
-                spotLight.castShadow = true;
+                spotLight.castShadow = false;
                 spotLight.distance = 512;
                 spotLight.penumbra = 0.5;
                 spotLight.decay = 1;
@@ -324,7 +324,7 @@
                 var spotLight2 = spotLight.clone();
                 spotLight2.angle = Math.PI / 2;
                 spotLight2.position.set(512, 80, 0);
-                spotLight2.castShadow = true;
+                spotLight2.castShadow = false;
                 spotLight2.visible = false;
                 scene.add(spotLight2);
                 lights.push(spotLight2);
@@ -332,7 +332,7 @@
                 var spotLight3 = spotLight.clone();
                 spotLight3.angle = Math.PI / 5;
                 spotLight3.position.set(512, 80, 272);
-                spotLight3.castShadow = true;
+                spotLight3.castShadow = false;
                 spotLight3.visible = false;
                 scene.add(spotLight3);
                 lights.push(spotLight3);
@@ -354,7 +354,7 @@
             }
 
             function initGUI() {
-                var props = { shadows: true,
+                var props = { shadows: false,
                               carColor: '#FFFFFF' };
 
                 gui = new dat.GUI({ autoPlace: false });

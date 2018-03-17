@@ -216,36 +216,6 @@ var Collision = {
     },
 
     createCity:  function(scene) {
-
-        var building = new THREE.CubeGeometry(9, 25, 9);
-        building.applyMatrix(new THREE.Matrix4().makeTranslation(0, 0.5, 0));
-        var buildingMesh = new THREE.Mesh(building);
-
-        var blight = new THREE.Color(0xffffff);
-        var bshadow = new THREE.Color(0x303050);
-
-        var cityGeometry = new THREE.Geometry();
-
-        // establish the base color for the buildingMesh
-        var bvalue = 1 - Math.random() * Math.random();
-        var baseColor = new THREE.Color().setRGB(bvalue + Math.random() * 0.1, bvalue, bvalue + Math.random() * 0.1);
-        // set topColor/bottom vertexColors as adjustement of baseColor
-        var topColor = baseColor.clone().multiply(blight);
-        var bottomColor = baseColor.clone().multiply(bshadow);
-        // set .vertexColors for each face
-        var bgeometry = buildingMesh.geometry;
-        for (var j = 0, jl = bgeometry.faces.length; j < jl; j++) {
-            if (j === 2) {
-                // set face.vertexColors on root face
-                bgeometry.faces[j].vertexColors = [baseColor, baseColor, baseColor, baseColor];
-            } else {
-                // set face.vertexColors on sides faces
-                bgeometry.faces[j].vertexColors = [topColor, bottomColor, bottomColor, topColor];
-            }
-        }
-
-        THREE.GeometryUtils.merge(cityGeometry, buildingMesh);
-
         var btexture = new THREE.Texture(generateTexture());
         btexture.anisotropy = renderer.capabilities.getMaxAnisotropy();
         btexture.needsUpdate = true;
@@ -255,9 +225,6 @@ var Collision = {
             map: btexture,
             vertexColors: THREE.VertexColors
         });
-        cityMesh = new THREE.Mesh(cityGeometry, bmaterial);
-        cityMesh.castShadow = true;
-        cityMesh.receiveShadow = true;
 
         function generateTexture() {
             // build a small canvas 32x64 and paint it in white
@@ -293,23 +260,32 @@ var Collision = {
             return canvas2;
         }
 
-        //CREATE MULTIPLE DUILDING
+        // CREATE MULTIPLE BUILDINGS
         var city = new THREE.Group();
-        var i = 1;
+        var h = 12;
+        var rnd;
 
         for (var z = -30; z < 71; z += 25) {
             for (var x = 40; x < 401; x += 36) {
-                var cityMesh2 = cityMesh.clone();
-                cityMesh2.position.set(x, 8, z);
-                city.add(cityMesh2);
+                rnd = Util.randomInt(1, 4);
+                var g = new THREE.CubeGeometry(9, h*rnd, 9);
+                var cityMesh = new THREE.Mesh(g, bmaterial);
+                cityMesh.position.set(x, (h*rnd/2), z);
+                cityMesh.castShadow = true;
+                cityMesh.receiveShadow = true;                    
+                city.add(cityMesh);
             }
         }
-
+        
         for (var z = 90; z < 211; z += 20) {
             for (var x = 40; x < 71; x += 15) {
-                var cityMesh2 = cityMesh.clone();
-                cityMesh2.position.set(x, 8, z);
-                city.add(cityMesh2);
+                rnd = Util.randomInt(1, 4);
+                var g = new THREE.CubeGeometry(9, h*rnd, 9);
+                var cityMesh = new THREE.Mesh(g, bmaterial);
+                cityMesh.position.set(x, (h*rnd/2), z);
+                cityMesh.castShadow = true;
+                cityMesh.receiveShadow = true;                         
+                city.add(cityMesh);
             }
         }
 
