@@ -114,7 +114,7 @@
 
                 renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
                 renderer.shadowMap.enabled = true;
-                renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+                renderer.shadowMap.type = THREE.PCFShadowMap;
 
                 container = document.getElementById('main');
                 renderer.setSize($(container).width(), $(container).height());
@@ -186,6 +186,7 @@
 
                 Environment.createCity(scene);
                 collidableMeshList.push(Environment.createTower(scene));
+                //Environment.createMill(scene);
                 Environment.createTrees(scene);
                 onLapReferences = Collision.referenceLap(scene);
                 for (var i = 0; i < onLapReferences.length; i++)
@@ -250,43 +251,7 @@
                     Car.castShadow = true;
                     scene.add(Car);
                     Car.add(activeCamera);
-                });
-
-				//Pala Mulino
-				var cBladeGeometry = new THREE.CylinderGeometry(1, 1, 1, 32, 1);
-				var cBladeMaterial = new THREE.MeshBasicMaterial( {color: 0x00000} );
-				var cBlade = new THREE.Mesh( cBladeGeometry, cBladeMaterial );
-				cBlade.rotation.z = Math.PI / 2;
-				cBlade.rotation.y = Math.PI / 2;
-				cBlade.position.set(160, 10, 148);
-
-				var bladeGeometry = new THREE.CubeGeometry(1, 7, 0.1);
-				var bladeMaterial = new THREE.MeshBasicMaterial( {color: 0x00000} );
-				var Blade = new THREE.Mesh( bladeGeometry, bladeMaterial );
-				Blade.position.set(4, 0, 0);
-				Blade.rotation.x = Math.PI/2;
-				Blade.rotation.z = Math.PI/2;
-        
-				var Blade2 = Blade.clone();
-				Blade2.position.set(0, 0, 4);
-				Blade2.rotation.z = Math.PI;
-
-				var Blade3 = Blade.clone();
-				Blade3.position.set(-4, 0, 0);
-				Blade3.rotation.x = Math.PI/2;
-				Blade3.rotation.z = Math.PI/2;
-
-				var Blade4 = Blade.clone();
-				Blade4.position.set(0, 0, -4);
-				Blade4.rotation.z = Math.PI;
-
-				RuotaMulino = cBlade;
-				RuotaMulino.add(Blade);
-				RuotaMulino.add(Blade2);
-				RuotaMulino.add(Blade3);
-				RuotaMulino.add(Blade4);
-
-				scene.add( RuotaMulino );
+                });				
 
                 // END INIT
             }
