@@ -370,6 +370,7 @@ var Collision = {
 
     createTrees:  function(scene) {
         function createTree(x, y, z) {
+            var shadows = true;
             geometry = new THREE.BoxGeometry( 1, 1, 1 );
 
             var leaveDarkMaterial = new THREE.MeshStandardMaterial( { color: 0x91E56E } );
@@ -380,38 +381,38 @@ var Collision = {
             var stem = new THREE.Mesh( geometry, stemMaterial );
             stem.position.set( 0, 0, 0 );
             stem.scale.set( 0.3, 1.5, 0.3 );
-            stem.receiveShadow = true;
-            stem.castShadow = true;
+            stem.receiveShadow = shadows;
+            stem.castShadow = shadows;
 
             var squareLeave01 = new THREE.Mesh( geometry, leaveDarkMaterial );
             squareLeave01.position.set( 0.5, 1.6, 0.5 );
             squareLeave01.scale.set( 0.8, 0.8, 0.8 );
-            squareLeave01.receiveShadow = true;
-            squareLeave01.castShadow = true;
+            squareLeave01.receiveShadow = shadows;
+            squareLeave01.castShadow = shadows;
 
             var squareLeave02 = new THREE.Mesh( geometry, leaveDarkMaterial );
             squareLeave02.position.set( -0.4, 1.3, -0.4 );
             squareLeave02.scale.set( 0.7, 0.7, 0.7 );
-            squareLeave02.receiveShadow = true;
-            squareLeave02.castShadow = true;
+            squareLeave02.receiveShadow = shadows;
+            squareLeave02.castShadow = shadows;
 
             var squareLeave03 = new THREE.Mesh( geometry, leaveDarkMaterial );
             squareLeave03.position.set( 0.4, 1.7, -0.5 );
             squareLeave03.scale.set( 0.7, 0.7, 0.7 );
-            squareLeave03.receiveShadow = true;
-            squareLeave03.castShadow = true;
+            squareLeave03.receiveShadow = shadows;
+            squareLeave03.castShadow = shadows;
 
             var leaveDark = new THREE.Mesh( geometry, leaveDarkMaterial );
             leaveDark.position.set( 0, 1.2, 0 );
             leaveDark.scale.set( 1, 2, 1 );
-            leaveDark.receiveShadow = true;
-            leaveDark.castShadow = true;
+            leaveDark.receiveShadow = shadows;
+            leaveDark.castShadow = shadows;
 
             var leaveLight = new THREE.Mesh( geometry, leaveLightMaterial );
             leaveLight.position.set( 0, 1.2, 0 );
             leaveLight.scale.set( 1.1, 0.5, 1.1 );
-            leaveLight.receiveShadow = true;
-            leaveLight.castShadow = true;
+            leaveLight.receiveShadow = shadows;
+            leaveLight.castShadow = shadows;
 
             tree = new THREE.Object3D();
             tree.add( leaveDark );
@@ -430,12 +431,12 @@ var Collision = {
         var zLimit = 270;
 
         var trees = new THREE.Group();
-        for (var i=0; i<100; i++) {
+        for (var i=0; i<50; i++) {
             var x = Util.beta(xStart, xLimit);
             var z = Util.beta(zStart, zLimit);
             trees.add(createTree(x, 0, z));
         }
-        for (var i=0; i<50; i++) {
+        for (var i=0; i<20; i++) {
             var x = Util.random(xStart, xLimit);
             var z = Util.random(zStart, zLimit);
             trees.add(createTree(x, 0, z));
@@ -446,7 +447,7 @@ var Collision = {
         xLimit = 200;
         zLimit = 270;
 
-        for (var i=0; i<20; i++) {
+        for (var i=0; i<10; i++) {
             var x = Util.beta(xStart, xLimit);
             var z = Util.randomInt(zStart, zLimit);
             trees.add(createTree(x, 0, z));
@@ -468,7 +469,7 @@ var Collision = {
         xLimit = 10;
         zLimit = 200;
 
-        for (var i=0; i<20; i++) {
+        for (var i=0; i<10; i++) {
             var x = Util.random(xStart, xLimit);
             var z = Util.random(zStart, zLimit);
             trees.add(createTree(x, 0, z));
@@ -479,7 +480,7 @@ var Collision = {
         xLimit = 410;
         zLimit = -45;
 
-        for (var i=0; i<20; i++) {
+        for (var i=0; i<10; i++) {
             var x = Util.random(xStart, xLimit);
             var z = Util.random(zStart, zLimit);
             trees.add(createTree(x, 0, z));
