@@ -133,15 +133,11 @@ var Collision = {
     createSky:  function(scene) {
 
         var skySphere = new THREE.SphereGeometry(2048, 128, 128);
-        if (night == false) {
-            var skyTexture = new THREE.TextureLoader().load("images/Sky.jpg");
-        } else {
-            var skyTexture = new THREE.TextureLoader().load("images/night.png");
-        }
-        
+        var skyTexture = new THREE.TextureLoader().load("images/Sky.jpg");        
         skyTexture.wrapS = skyTexture.wrapT = THREE.RepeatWrapping;
 
         var skyMaterial = new THREE.MeshLambertMaterial({map: skyTexture, side: THREE.DoubleSide});
+        skyMaterial.color.setHex(0x87CEEB);
         var skyDome = new THREE.Mesh(skySphere, skyMaterial);
         scene.add(skyDome);
     },
@@ -341,7 +337,7 @@ var Collision = {
         texture.repeat.set( 64, 64 );
 
         var geometry = new THREE.ShapeBufferGeometry( trackShape );
-        var mesh = new THREE.Mesh( geometry, new THREE.MeshStandardMaterial( { map: texture, side: THREE.DoubleSide} ) );
+        var mesh = new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({ map: texture, side: THREE.DoubleSide }));
 
         mesh.position.set(SETTINGS.TRACK_POSITION['x'], SETTINGS.TRACK_POSITION['y'], SETTINGS.TRACK_POSITION['z']);
         mesh.rotation.set(SETTINGS.WORLD_ROTATION['x'], SETTINGS.WORLD_ROTATION['y'], SETTINGS.WORLD_ROTATION['z']);
@@ -373,9 +369,9 @@ var Collision = {
             var shadows = true;
             geometry = new THREE.BoxGeometry( 1, 1, 1 );
 
-            var leaveDarkMaterial = new THREE.MeshStandardMaterial( { color: 0x91E56E } );
-            var leaveLightMaterial = new THREE.MeshStandardMaterial( { color: 0xA2FF7A } );
-            var leaveDarkDarkMaterial = new THREE.MeshStandardMaterial( { color: 0x71B356 } );
+            var leaveDarkMaterial = new THREE.MeshStandardMaterial( { color: 0x008000 } );
+            var leaveLightMaterial = new THREE.MeshStandardMaterial( { color: 0x228B22 } );
+            var leaveDarkDarkMaterial = new THREE.MeshStandardMaterial( { color: 0x006400 } );
             var stemMaterial = new THREE.MeshStandardMaterial( { color: 0x7D5A4F } );
 
             var stem = new THREE.Mesh( geometry, stemMaterial );
