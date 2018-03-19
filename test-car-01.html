@@ -105,6 +105,8 @@
             var lap  = {value:0,    dom:document.getElementById('lap_value')};
             var dir  = {value:true, dom:document.getElementById('dir_value')};
             var night = false;
+
+			var rotWorldMatrix;
  
             init();
             animate();
@@ -405,15 +407,15 @@
                 var dt = 0.5;
                 var speedPercent = speed / maxSpeed;
                 var ds = 2 * speedPercent * dt;
-                var rotateAngle = Math.PI / 2 * 0.025;
+                var rotateAngle = 0.02;
                 var originPoint = Car.position.clone();
 
                 WheelFL.rotation.y = 0;
 
                 // update speed
-                if (keyboard.pressed("W"))
+                if (keyboard.pressed("W")){
                     speed = Util.accelerate(speed, accel, dt);
-                else if (keyboard.pressed("S"))
+                }else if (keyboard.pressed("S"))
                     speed = Util.accelerate(speed, breaking, dt);
                 else speed = Util.accelerate(speed, decel, dt);
 
@@ -451,12 +453,19 @@
 
                 // rotate left/right/up/down
                 if (keyboard.pressed("A")) {
-                    Car.rotateOnAxis(new THREE.Vector3(0, 1, 0), rotateAngle);
+					//Car.rotation.y += 0.01;
+					if(speed > 0){
+						Car.rotateOnAxis(new THREE.Vector3(0, 1, 0), rotateAngle);
+					}
                     WheelFL.rotation.x = 0;
-                    WheelFL.rotation.y = Math.PI / 4;
+                    WheelFL.rotation.y += 0.2;
                 }
-                if (keyboard.pressed("D"))
-                    Car.rotateOnAxis(new THREE.Vector3(0, 1, 0), -rotateAngle);
+
+                if (keyboard.pressed("D")){
+					if(speed > 0){
+						Car.rotateOnAxis(new THREE.Vector3(0, 1, 0), -rotateAngle);
+					}
+				}
 
                 if (Collision.walls(Car, collidableMeshList)) {
                     speed = 0;
@@ -512,8 +521,6 @@
 
                 // END RENDER FUNCTION
             }
-
-
 
         </script>
     </body>
