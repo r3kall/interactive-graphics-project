@@ -83,7 +83,7 @@
 
             // global variables
             var Car, Track, Sky, Day, Night;
-            var WheelFL, WheelBL;
+            var WheelFL, WheelBL, WheelFR, WheelBR;
             var collidableMeshList = [];
             var onDirectionReferences = [];
             var onLapReferences = [];
@@ -153,7 +153,7 @@
                             break;
                         case "1st-cam":
                             controls.enabled = false;
-                            activeCamera.position.set(0, 1, 0.4);
+                            activeCamera.position.set(0, 1.26, 0.35);
                             activeCamera.lookAt(new THREE.Vector3(0, 0, 8));
                             break;
                         case "top-cam":
@@ -221,6 +221,7 @@
                 // LIGHTS                
                 initLights();
 
+				//Wheels
                 var geometry = new THREE.CylinderGeometry(0.3, 0.3, 0.3, 32, 1, false);
                 var rimTex = new THREE.TextureLoader().load("images/rim.jpg");
                 var materialGum = new THREE.MeshBasicMaterial({ map: rimTex });
@@ -248,9 +249,17 @@
 
                 var cylinder2 = cylinder.clone();
                 cylinder2.position.set(0.565, 0.3, -0.85);
+
+				var cylinder3 = cylinder.clone();
+				cylinder3.position.set(-0.58, 0.3, 1.2);
+
+				var cylinder4 = cylinder.clone();
+				cylinder4.position.set(-0.565, 0.3, -0.85);
                
                 WheelFL = cylinder;
                 WheelBL = cylinder2;
+				WheelFR = cylinder3;
+				WheelBR = cylinder4;
 
                 // CAR TEXTURE
                 var texture = new THREE.Texture();
@@ -267,13 +276,15 @@
                 objectLoader.load("models/camero-2010-no-wheels.json", function (obj) {
 
                     var carMesh = new THREE.Mesh(obj, material);
-                    carMesh.position.set(-30, -0.5, 20);
+                    carMesh.position.set(-30, -0.458, 20);
                     carMesh.rotation.set(0, Math.PI, 0);
                     carMesh.rotateOnAxis(new THREE.Vector3(0, 1, 0), Math.PI);
 
                     Car = carMesh;
                     Car.add(cylinder)
                     Car.add(cylinder2);
+					Car.add(cylinder3);
+					Car.add(cylinder4);
                     Car.castShadow = true;
                     scene.add(Car);
                     Car.add(activeCamera);
@@ -411,6 +422,7 @@
                 var originPoint = Car.position.clone();
 
                 WheelFL.rotation.y = 0;
+				WheelFR.rotation.y = 0;
 
                 // update speed
                 if (keyboard.pressed("W")){
@@ -453,18 +465,23 @@
 
                 // rotate left/right/up/down
                 if (keyboard.pressed("A")) {
-					//Car.rotation.y += 0.01;
 					if(speed > 0){
 						Car.rotateOnAxis(new THREE.Vector3(0, 1, 0), rotateAngle);
 					}
                     WheelFL.rotation.x = 0;
                     WheelFL.rotation.y += 0.2;
+					WheelFR.rotation.x = 0;
+                    WheelFR.rotation.y += 0.2;
                 }
 
                 if (keyboard.pressed("D")){
 					if(speed > 0){
 						Car.rotateOnAxis(new THREE.Vector3(0, 1, 0), -rotateAngle);
 					}
+					WheelFL.rotation.x = 0;
+                    WheelFL.rotation.y -= 0.2;
+					WheelFR.rotation.x = 0;
+                    WheelFR.rotation.y -= 0.2;
 				}
 
                 if (Collision.walls(Car, collidableMeshList)) {
@@ -474,8 +491,9 @@
 
                 if (speed > 0) { // if speed > 0, move Car forward
                     WheelFL.rotation.x += rotateAngle;
-                    //WheelFL.rotateOnWorldAxis(new THREE.Vector3(1, 0, 0), rotateAngle);
-                    WheelBL.rotateOnAxis(new THREE.Vector3(0, -1, 0), rotateAngle);
+					WheelBL.rotation.x += rotateAngle;
+					WheelFR.rotation.x += rotateAngle;
+					WheelBR.rotation.x += rotateAngle;
                     Car.translateZ(ds);
                 }
 

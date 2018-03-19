@@ -209,7 +209,6 @@ var Collision = {
 
     createCity:  function(scene) {
         
-
         function generateTexture() {
             // build a small canvas 32x64 and paint it in white
             var canvas = document.createElement('canvas');
@@ -227,7 +226,6 @@ var Collision = {
                     context.fillRect(x, y, 2, 1);
                 }
             }
-
             // build a bigger canvas and copy the small one in it
             // This is a trick to upscale the texture without filtering
             var canvas2 = document.createElement('canvas');
@@ -498,14 +496,16 @@ var Collision = {
 
     createMill:  function(scene) {        
         var cBladeGeometry = new THREE.CylinderGeometry(1, 1, 1, 32, 1);
-        var cBladeMaterial = new THREE.MeshBasicMaterial( {color: 0x00000} );
+        var cBladeTex = new THREE.TextureLoader().load("images/WoodDark.jpg");
+        var cBladeMaterial = new THREE.MeshStandardMaterial({ map: cBladeTex });
         var cBlade = new THREE.Mesh( cBladeGeometry, cBladeMaterial );
         cBlade.rotation.z = Math.PI / 2;
         cBlade.rotation.y = Math.PI / 2;
         cBlade.position.set(160, 10, 148);
 
         var bladeGeometry = new THREE.CubeGeometry(1, 7, 0.1);
-        var bladeMaterial = new THREE.MeshBasicMaterial( {color: 0x00000} );
+        var bladeTex = new THREE.TextureLoader().load("images/WoodDark.jpg");
+        var bladeMaterial = new THREE.MeshBasicMaterial( {map: bladeTex} );
         var Blade = new THREE.Mesh( bladeGeometry, bladeMaterial );
         Blade.position.set(4, 0, 0);
         Blade.rotation.x = Math.PI/2;
