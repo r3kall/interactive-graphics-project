@@ -33,10 +33,10 @@
               <div class="dropdown">
                 <span class="nav-item">Cameras</span>
                 <div class="dropdown-content">
-                  <span class="nav-cam" id="3rd-cam">3rd person</span>
-                  <span class="nav-cam" id="1st-cam">1st person</span>
-                  <span class="nav-cam" id="top-cam">top view</span>
-                  <span class="nav-cam" id="free-cam">free view</span>
+                  <span class="nav-cam" id="3rd-cam">3rd Person</span>
+                  <span class="nav-cam" id="1st-cam">1st Person</span>
+                  <span class="nav-cam" id="top-cam">Top View</span>
+                  <span class="nav-cam" id="free-cam">Free View</span>
                 </div>
               </div> 
             </div>
@@ -178,11 +178,11 @@
 
                 // STATS
                 
-                stats = new Stats();
+                /*stats = new Stats();
                 stats.domElement.style.position = 'absolute';
                 stats.domElement.style.bottom = '0px';
                 stats.domElement.style.zIndex = 100;
-                container.appendChild(stats.domElement);
+                container.appendChild(stats.domElement);*/
                 
                 // var axes = new THREE.AxisHelper(100);
                 // scene.add(axes);
@@ -244,7 +244,8 @@
                 }
 
                 var cylinder = new THREE.Mesh(geometry, materialsArray);
-                cylinder.position.set(0.58, 0.3, 1.2);
+                
+				cylinder.position.set(0.58, 0.3, 1.2);
                 cylinder.rotation.z = Math.PI / 2;
 
                 var cylinder2 = cylinder.clone();
@@ -281,7 +282,7 @@
                     carMesh.rotateOnAxis(new THREE.Vector3(0, 1, 0), Math.PI);
 
                     Car = carMesh;
-                    Car.add(cylinder)
+                    Car.add(cylinder);
                     Car.add(cylinder2);
 					Car.add(cylinder3);
 					Car.add(cylinder4);
@@ -409,7 +410,7 @@
 
             function update() {
                 updateCarPosition();
-                stats.update();
+                //stats.update();
             }
 
 

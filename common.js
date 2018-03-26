@@ -118,7 +118,7 @@ var Collision = {
         floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping;
         floorTexture.repeat.set( 128, 128 );
 
-        var floorMaterial = new THREE.MeshStandardMaterial( {map: floorTexture, metalness: 0.3} );
+        var floorMaterial = new THREE.MeshLambertMaterial( {map: floorTexture} );
         var floorGeometry = new THREE.PlaneGeometry(1024, 1024, 32, 32);
         var floor = new THREE.Mesh(floorGeometry, floorMaterial);
 
@@ -331,7 +331,7 @@ var Collision = {
         texture.repeat.set( 64, 64 );
 
         var geometry = new THREE.ShapeBufferGeometry( trackShape );
-        var mesh = new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({ map: texture, side: THREE.DoubleSide, metalness: 0.3 }));
+        var mesh = new THREE.Mesh(geometry, new THREE.MeshLambertMaterial({ map: texture, side: THREE.DoubleSide}));
 
         mesh.position.set(SETTINGS.TRACK_POSITION['x'], SETTINGS.TRACK_POSITION['y'], SETTINGS.TRACK_POSITION['z']);
         mesh.rotation.set(SETTINGS.WORLD_ROTATION['x'], SETTINGS.WORLD_ROTATION['y'], SETTINGS.WORLD_ROTATION['z']);
